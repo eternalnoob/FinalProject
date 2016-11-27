@@ -13,6 +13,8 @@ var app = function() {
         }
     };
 
+    
+
 
     // Complete as needed.
     self.vue = new Vue({
@@ -20,7 +22,8 @@ var app = function() {
         delimiters: ['${', '}'],
         unsafeDelimiters: ['!{', '}'],
         data: {
-            has_more: false
+            has_more: false,
+            page: 'add_marker'
         },
         methods: {
             get_more: self.get_more

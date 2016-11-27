@@ -5,14 +5,27 @@
 <script>
     var my_url = "{{=URL('api', 'my_method')}}";
 </script>
+
 {{end}}
 
 <div class="main_content">
 
     <div id="vue-div" class="display:none">
         <!-- Your code goes here.  Remember to call $("#vue-div").show() once you get the data for the first time. -->
+
+        <div v-if="page=='add_marker'">
+            <input class="search_input"/>
+            
+
+        </div>
+
+
+
     </div>
 
+    <div id="map"></div>
+
 </div>
+
 
 <script src="{{=URL('static', 'js/default_index.js')}}"></script>
