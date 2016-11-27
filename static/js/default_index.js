@@ -13,6 +13,16 @@ var app = function() {
         }
     };
 
+    self.load_events = function() {
+        $.get(
+            getMarkerUrl,
+            function(data) {
+                self.vue.events = data.events;
+            }
+        )
+    };
+
+
 
 
 
@@ -23,7 +33,8 @@ var app = function() {
         unsafeDelimiters: ['!{', '}'],
         data: {
             has_more: false,
-            page: 'event_view'
+            page: 'event_view',
+            events: []
         },
         methods: {
             get_more: self.get_more
@@ -31,6 +42,7 @@ var app = function() {
 
     });
 
+    self.load_events();
 
     return self;
 };
