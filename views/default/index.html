@@ -2,8 +2,11 @@
 
 {{block head}}
 <script src="{{=URL('static', 'js/vue.js')}}"></script>
+<script src="{{=URL('static','js/vue-google-maps.js')}}"></script>
 <script>
-    var my_url = "{{=URL('api', 'my_method')}}";
+    var my_url = "{{=URL('api', 'my_method', hmac_key=session.hmac_key)}}";
+    var getMarkerUrl = "{{=URL('api', 'getmarkers', hmac_key=session.hmac_key)}}";
+    var addEventUrl = "{{=URL('api', 'addevent', hmac_key=session.hmac_key)}}";
 </script>
 <script src="https://cdn.jsdelivr.net/emojione/2.2.6/lib/js/emojione.min.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/emojione/2.2.6/assets/css/emojione.min.css"/>
