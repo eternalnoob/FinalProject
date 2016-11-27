@@ -1,5 +1,6 @@
 # Here go your api methods.
 import datetime
+from datetime import timedelta
 
 def get_user_full_name(user_id):
     user = db(db.auth_user.id == user_id).select().first()
@@ -22,7 +23,8 @@ def translate_event(event):
     return event_dict
 
 def getmarkers():
-    events = db(db.events.occurs_at > datetime.datetime.utcnow()).select(orderby=~db.events.occurs_at)
+    events = db(db.events.occurs_at > (datetime.datetime.utcnow() - timedelta(minutes=45))
+                                       ).select(orderby=~db.events.occurs_at)
     return_dict = {'events': []}
     for event in events:
         return_dict['events'].append(translate_event(event))
@@ -30,7 +32,6 @@ def getmarkers():
 
 @auth.requires_login()
 def addevent():
-    print(auth.user)
     lat = request.vars.latitude
     lng = request.vars.longitude
     title = request.vars.title
@@ -39,13 +40,7 @@ def addevent():
     occur_date = datetime.datetime.strptime(occur_date, "%Y-%m-%dT%H:%M:%S.%fZ")
     # parses ISO string, just call toISOString() on any javascript date object
     event_id = db.events.insert(latitude=lat, longitude=lng, title=title, occurs_at=occur_date,
-                                description=description)
+                                description=description, creator=auth.user.id)
     event = db(db.events.id == event_id).select().first()
     response.status = 201
     return response.json(translate_event(event))
-
-
-
-
-
-

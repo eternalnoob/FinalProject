@@ -17,12 +17,41 @@ var app = function() {
         $.get(
             getMarkerUrl,
             function(data) {
-                self.vue.events = data.events;
+                if (self.vue.events != data.events){
+                    self.clear_events;
+                    self.vue.events = data.events;
+                    self.show_events();
+                }
             }
         )
     };
 
+    self.clear_events = function() {
+        for(var i = 0; i < self.vue.markers.length; i++) {
+            self.vue.markers[i].setVisible(false);
+            self.vue.markers = [];
+            self.vue.events = [];
+        }
+    };
 
+    self.show_events = function() {
+        self.vue.markers = self.vue.events.map(self.make_marker);
+    };
+
+    self.make_marker = function(event) {
+        var marker = new google.maps.Marker({
+            position: event.position,
+            map: map
+        });
+        console.log(marker);
+        return marker;
+    };
+
+    self.auto_refresh = function () {
+        setInterval(
+            self.load_events, 10000
+        )
+    };
 
 
 
@@ -34,7 +63,8 @@ var app = function() {
         data: {
             has_more: false,
             page: 'event_view',
-            events: []
+            events: [],
+            markers: []
         },
         methods: {
             get_more: self.get_more
@@ -42,7 +72,8 @@ var app = function() {
 
     });
 
-    self.load_events();
+    self.load_events(); //first load
+    self.auto_refresh(); //set to refresh page so we see all events
 
     return self;
 };
