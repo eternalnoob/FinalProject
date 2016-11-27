@@ -13,7 +13,7 @@ var app = function() {
         }
     };
 
-    
+
 
 
     // Complete as needed.
@@ -23,7 +23,7 @@ var app = function() {
         unsafeDelimiters: ['!{', '}'],
         data: {
             has_more: false,
-            page: 'add_marker'
+            page: 'event_view'
         },
         methods: {
             get_more: self.get_more

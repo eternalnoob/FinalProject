@@ -5,22 +5,48 @@
 <script>
     var my_url = "{{=URL('api', 'my_method')}}";
 </script>
-
+<script src="https://cdn.jsdelivr.net/emojione/2.2.6/lib/js/emojione.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/emojione/2.2.6/assets/css/emojione.min.css"/>
 {{end}}
 
 <div class="main_content">
 
     <div id="vue-div" class="display:none">
         <!-- Your code goes here.  Remember to call $("#vue-div").show() once you get the data for the first time. -->
-
-        <div v-if="page=='add_marker'">
-            <input class="search_input"/>
-            
+        <div v-if="page=='decision_bar'">
 
         </div>
 
 
 
+
+        <div v-if="page=='event_view'">
+            <form>
+
+
+              <div class="form-group">
+                <input type="text" class="form-control" id="event_name" placeholder="Event Name">
+              </div>
+
+
+              <div class="form-group">
+                <input type="text" class="form-control" id="event_desc" placeholder="Event Description">
+              </div>
+
+
+              <div class="form-group">
+                  <select class="form-control">
+                    <option>emoji1</option>
+                    <option>emoji2</option>
+                    <option>emoji3</option>
+                    <option>emoji4</option>
+                    <option>emoji5</option>
+                  </select>
+              </div>
+
+              <button type="submit" class="btn btn-default">PostMarker</button>
+            </form>
+        </div>
     </div>
 
     <div id="map"></div>
