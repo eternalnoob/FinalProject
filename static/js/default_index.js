@@ -39,9 +39,16 @@ var app = function() {
     };
 
     self.make_marker = function(event) {
+        var infoWindow = new google.maps.InfoWindow({
+            content: event.infobox_content
+        });
+
         var marker = new google.maps.Marker({
             position: event.position,
             map: map
+        });
+        marker.addListener('click', function(){
+            infoWindow.open(map, marker);
         });
         console.log(marker);
         return marker;

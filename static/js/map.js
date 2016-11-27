@@ -9,7 +9,7 @@ function initMap() {
 
   var drawingManager = new google.maps.drawing.DrawingManager({
     drawingMode: google.maps.drawing.OverlayType.MARKER,
-    drawingControl: false,
+    drawingControl: true,
     drawingControlOptions: {
       position: google.maps.ControlPosition.TOP_CENTER,
       drawingModes: ['marker', 'circle', 'polygon', 'polyline', 'rectangle']
