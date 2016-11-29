@@ -8,8 +8,9 @@ def get_user_full_name(user_id):
 
 def translate_event(event):
     event_dict = dict()
-    event_dict['position'] = {'lat': event.latitude,
-                              'lng': event.longitude}
+
+    event_dict['lat'] = event.latitude
+    event_dict['lng'] = event.longitude
     if auth.user and event.creator == auth.user.id:
         event_dict['modifiable'] = True
     else:

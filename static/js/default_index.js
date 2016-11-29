@@ -1,5 +1,4 @@
 // This is the js for the default/index.html view.
-var map;
 var app = function() {
 
     var self = {};
@@ -18,7 +17,7 @@ var app = function() {
             getMarkerUrl,
             function(data) {
                 if (self.vue.events != data.events){
-                    self.clear_events;
+                    self.vue.map.removeMarkers();
                     self.vue.events = data.events;
                     self.show_events();
                 }
@@ -26,32 +25,8 @@ var app = function() {
         )
     };
 
-    self.clear_events = function() {
-        for(var i = 0; i < self.vue.markers.length; i++) {
-            self.vue.markers[i].setVisible(false);
-            self.vue.markers = [];
-            self.vue.events = [];
-        }
-    };
-
     self.show_events = function() {
-        self.vue.markers = self.vue.events.map(self.make_marker);
-    };
-
-    self.make_marker = function(event) {
-        var infoWindow = new google.maps.InfoWindow({
-            content: event.infobox_content
-        });
-
-        var marker = new google.maps.Marker({
-            position: event.position,
-            map: map
-        });
-        marker.addListener('click', function(){
-            infoWindow.open(map, marker);
-        });
-        console.log(marker);
-        return marker;
+        self.vue.map.addMarkers(self.vue.events.map(make_marker_dict));
     };
 
     self.auto_refresh = function () {
@@ -61,25 +36,46 @@ var app = function() {
     };
 
     self.initmap = function() {
-        map = new GMaps({
+        self.vue.map = new GMaps({
             el: '#map',
             lat: 36.9914,
             lng: -122.0609
         });
 
-        //console.log(map);
+    };
+
+    make_marker_dict = function(event) {
+        return {
+            lat: event.lat,
+            lng: event.lng,
+            infoWindow: {
+                content: event.infobox_content
+            },
+            title: event.title
+        };
+    };
+
+    self.add_to_map = function(event) {
+        self.vue.map.addMarker(make_marker_dict(event));
     };
 
     self.addMarker = function(latt, long) {
-        map.addMarker({
-            lat: latt,
-            lng: long,
-            title: 'hello!',
-            infoWindow: {
-                content: '<p>HTML Content</p>'
-            }
-        });
+        var date = new Date();
+        var muhstring = date.toISOString();
         console.log(map);
+        $.post(addEventUrl,
+            {
+                latitude: latt,
+                longitude: long,
+                title: 'BOW BOW BOW BOW BOW BOW',
+                description: 'BAZINGA',
+                date: muhstring
+            },
+            function(data) {
+                self.add_to_map(data);
+                console.log("AWW YUS");
+            }
+            )
     };
 
 
@@ -94,8 +90,8 @@ var app = function() {
             events: [],
             markers: [],
             latt: 0,
-            long: 0
-
+            long: 0,
+            map: null
         },
         methods: {
             get_more: self.get_more,
@@ -107,9 +103,9 @@ var app = function() {
 
     });
 
+    self.initmap(); // googleializes the map on reload
     self.load_events(); //first load
     self.auto_refresh(); //set to refresh page so we see all events
-    self.initmap(); // googleializes the map on reload
     //self.addMarker();
 
 
