@@ -51,6 +51,7 @@ var app = function() {
             infoWindow: {
                 content: event.infobox_content
             },
+            icon: event.marker_url,
             title: event.title
         };
     };

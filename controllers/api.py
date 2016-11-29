@@ -21,6 +21,25 @@ def translate_event(event):
     event_dict['description'] = event.description
     event_dict['edited_on'] = event.edited_on
     event_dict['infobox_content'] = event.title + ': ' + event.description
+    event_dict['id'] = event.id
+    if auth.user:
+        check = db(db.confirmations.event_id == event.id,
+                   db.confirmations.user_id == auth.user.id).select().first()
+        if check:
+            event_dict['attending'] = check.confirmation
+        else:
+            event_dict['attending'] = False
+    else:
+        event_dict['attending'] = False
+    confirmations = [x for x in db(db.confirmations.event_id == event.id,
+                       db.confirmations.confirmation==True).select()]
+    event_dict['total_attendees'] = len(confirmations)
+
+    if len(confirmations) > 0:
+        event_dict['marker_url'] = URL('static', 'images/fire.png')
+    else:
+        event_dict['marker_url'] = URL('static', 'images/poopoo.png')
+
     return event_dict
 
 def getmarkers():
@@ -29,6 +48,7 @@ def getmarkers():
     return_dict = {'events': []}
     for event in events:
         return_dict['events'].append(translate_event(event))
+    return_dict['loggedin'] = True if auth.user is not None else False
     return response.json(return_dict)
 
 @auth.requires_login()
@@ -45,3 +65,15 @@ def addevent():
     event = db(db.events.id == event_id).select().first()
     response.status = 201
     return response.json(translate_event(event))
+
+@auth.requires_login()
+def confirm():
+    event_id = request.vars.event_id
+    user_id = auth.user.id
+    is_real = bool(request.vars.isreal)
+    event = db(db.confirmations.user_id==user_id,db.confirmations.event_id == event_id).select().first()
+    if event:
+        db(db.confirmations.user_id==user_id, db.confirmations.event_id==event_id).select().first().update_record(
+            confirmation=is_real)
+    else:
+        db.confirmations.insert(user_id=user_id, event_id=event_id, confirmation=is_real)

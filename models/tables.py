@@ -23,6 +23,15 @@ db.define_table('events',
                 Field('title', 'string', default="", required=True),
                 Field('description', 'string', default=""))
 
+# this is the idea that a user can confirm that an event is correct
+# lit party, real bad stuff, etc.
+db.define_table('confirmations',
+                Field('user_id', db.auth_user, required=True, default=auth.user_id),
+                Field('event_id', db.events, required=True),
+                Field('confirmation', 'boolean', required=True, default=True),
+                Field('created_on', 'datetime', default=datetime.datetime.utcnow()),
+                Field('edited_on', 'datetime', update=datetime.datetime.utcnow()))
+
 from gluon.utils import web2py_uuid
 if session.hmac_key is None:
     session.hmac_key = web2py_uuid()
