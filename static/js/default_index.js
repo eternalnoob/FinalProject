@@ -1,5 +1,5 @@
 // This is the js for the default/index.html view.
-
+var map;
 var app = function() {
 
     var self = {};
@@ -60,53 +60,27 @@ var app = function() {
         )
     };
 
-
-
-    /*self.googleMap = {
-
-
-        init: function () {
-            var map = new google.maps.Map(document.getElementById('map'), {
-                // S(lat), W(lng) are negative coordinates
-                center: {lat: 36.9914, lng: -122.0609},
-                zoom: 15
-            });
-            return map;
-            console.log(map);
-
-        };
-
-        addMarker: function() {
-
-        }
-    };*/
-
-    self.initMap = function() {
-        var map = new google.maps.Map(document.getElementById('map'), {
-            // S(lat), W(lng) are negative coordinates
-            center: {lat: 36.9914, lng: -122.0609},
-            zoom: 15
+    self.initmap = function() {
+        map = new GMaps({
+            el: '#map',
+            lat: 36.9914,
+            lng: -122.0609
         });
-        return map;
-    }
 
-    /*self.googleMap = new google.maps.Map(document.getElementById('map'), {
-        // S(lat), W(lng) are negative coordinates
-        center: {lat: 36.9914, lng: -122.0609},
-        zoom: 15
-    });
-
+        //console.log(map);
+    };
 
     self.addMarker = function() {
-        var marker = new google.maps.Marker({
-            position: {lat: 36.9914, lng: -122.0609},
-            map: self.googleMap,
-            title: 'Hello World!'
+        map.addMarker({
+            lat: 36.9914,
+            lng: -122.0609,
+            title: 'hello!',
+            infoWindow: {
+                content: '<p>HTML Content</p>'
+            }
         });
-
-        marker.setMap(self.googleMap);
-    }*/
-
+        console.log(map);
+    };
 
 
     // Complete as needed.
@@ -119,19 +93,22 @@ var app = function() {
             page: 'event_view',
             events: [],
             markers: [],
-            googleMap: self.googleMap
+
         },
         methods: {
             get_more: self.get_more,
-            initMap: self.initMap,
-            addMarker: self.addMarker
+            initmap: self.initmap,
+            addMarker: self.addMarker,
+            map: self.map,
+            logMap: self.logMap
         }
 
     });
 
     self.load_events(); //first load
     self.auto_refresh(); //set to refresh page so we see all events
-    self.initMap(); // googleializes the map on reload
+    self.initmap(); // googleializes the map on reload
+    //self.addMarker();
 
 
     return self;

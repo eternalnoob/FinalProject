@@ -14,8 +14,10 @@
 <!-- <script src="{{=URL('static','js/map.js')}}" async defer></script> -->
 <!--<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBf-IjT8bV8XgVG_xl2B6U6DZA58l1GICI&callback=initMap&libraries=drawing"
   async defer></script>-->
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBf-IjT8bV8XgVG_xl2B6U6DZA58l1GICI"
-    async defer></script><!-- this CDN is the google api without using the callback fucntion 'initMap', instead we initialize the map with Vue in default_index.js -->
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBf-IjT8bV8XgVG_xl2B6U6DZA58l1GICI"></script><!-- this CDN is the google api without using the callback fucntion 'initMap', instead we initialize the map with Vue in default_index.js -->
+<script src="../static/js/gmaps.js"></script>
+
+
 {{end}}
 
 <div class="main_content">
@@ -50,7 +52,7 @@
                   </select>
               </div>
 
-              <button type="submit" v-on:submit="addMarker" class="btn btn-default">PostMarker</button>
+              <button type="submit" v-on:click.prevent="addMarker()" class="btn btn-default">PostMarker</button>
             </form>
         </div>
 
