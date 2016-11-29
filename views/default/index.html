@@ -33,15 +33,19 @@
 
 
               <div class="form-group">
-                <input v-model="latt" type="text" class="form-control" id="event_name" placeholder="latt">
+                <input v-model="latt" type="text" class="form-control" placeholder="latt">
               </div>
 
 
               <div class="form-group">
-                <input v-model="long" type="text" class="form-control" id="event_desc" placeholder="long">
+                <input v-model="long" type="text" class="form-control" placeholder="long">
               </div>
 
-              <button type="submit" v-on:click.prevent="addMarker(latt, long)" class="btn btn-default">PostMarker</button>
+              <div class="form-group">
+                <input v-model="event_name" type="text" class="form-control" placeholder="event name">
+              </div>
+
+              <button type="submit" v-on:click.prevent="addMarker(latt, long, event_name)" class="btn btn-default">PostMarker</button>
             </form>
         </div>
 

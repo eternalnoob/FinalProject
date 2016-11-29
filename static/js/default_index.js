@@ -70,13 +70,13 @@ var app = function() {
         //console.log(map);
     };
 
-    self.addMarker = function(latt, long) {
+    self.addMarker = function(latt, long, event_name) {
         map.addMarker({
             lat: latt,
             lng: long,
             title: 'hello!',
             infoWindow: {
-                content: '<p>HTML Content</p>'
+                content: '<p>'+event_name+'</p>'
             }
         });
         console.log(map);
@@ -94,7 +94,8 @@ var app = function() {
             events: [],
             markers: [],
             latt: 0,
-            long: 0
+            long: 0,
+            event_name: ''
 
         },
         methods: {
