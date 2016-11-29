@@ -35,6 +35,11 @@ def translate_event(event):
                        db.confirmations.confirmation==True).select()]
     event_dict['total_attendees'] = len(confirmations)
 
+    if len(confirmations) > 0:
+        event_dict['marker_url'] = URL('static', 'images/fire.png')
+    else:
+        event_dict['marker_url'] = URL('static', 'images/poopoo.png')
+
     return event_dict
 
 def getmarkers():
@@ -71,4 +76,4 @@ def confirm():
         db(db.confirmations.user_id==user_id, db.confirmations.event_id==event_id).select().first().update_record(
             confirmation=is_real)
     else:
-        db.confirmations.insert(user_id=user_id, event_id=event_id, is_real=is_real)
+        db.confirmations.insert(user_id=user_id, event_id=event_id, confirmation=is_real)
