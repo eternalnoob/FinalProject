@@ -62,6 +62,53 @@ var app = function() {
 
 
 
+    /*self.googleMap = {
+
+
+        init: function () {
+            var map = new google.maps.Map(document.getElementById('map'), {
+                // S(lat), W(lng) are negative coordinates
+                center: {lat: 36.9914, lng: -122.0609},
+                zoom: 15
+            });
+            return map;
+            console.log(map);
+
+        };
+
+        addMarker: function() {
+
+        }
+    };*/
+
+    self.initMap = function() {
+        var map = new google.maps.Map(document.getElementById('map'), {
+            // S(lat), W(lng) are negative coordinates
+            center: {lat: 36.9914, lng: -122.0609},
+            zoom: 15
+        });
+        return map;
+    }
+
+    /*self.googleMap = new google.maps.Map(document.getElementById('map'), {
+        // S(lat), W(lng) are negative coordinates
+        center: {lat: 36.9914, lng: -122.0609},
+        zoom: 15
+    });
+
+
+    self.addMarker = function() {
+        var marker = new google.maps.Marker({
+            position: {lat: 36.9914, lng: -122.0609},
+            map: self.googleMap,
+            title: 'Hello World!'
+        });
+
+        marker.setMap(self.googleMap);
+    }*/
+
+
+
     // Complete as needed.
     self.vue = new Vue({
         el: "#vue-div",
@@ -71,16 +118,21 @@ var app = function() {
             has_more: false,
             page: 'event_view',
             events: [],
-            markers: []
+            markers: [],
+            googleMap: self.googleMap
         },
         methods: {
-            get_more: self.get_more
+            get_more: self.get_more,
+            initMap: self.initMap,
+            addMarker: self.addMarker
         }
 
     });
 
     self.load_events(); //first load
     self.auto_refresh(); //set to refresh page so we see all events
+    self.initMap(); // googleializes the map on reload
+
 
     return self;
 };

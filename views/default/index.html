@@ -2,7 +2,7 @@
 
 {{block head}}
 <script src="{{=URL('static', 'js/vue.js')}}"></script>
-<script src="{{=URL('static','js/vue-google-maps.js')}}"></script>
+<!-- <script src="{{=URL('static','js/vue-google-maps.js')}}"></script> -->
 <script>
     var my_url = "{{=URL('api', 'my_method', hmac_key=session.hmac_key)}}";
     var getMarkerUrl = "{{=URL('api', 'getmarkers', hmac_key=session.hmac_key)}}";
@@ -10,6 +10,12 @@
 </script>
 <script src="https://cdn.jsdelivr.net/emojione/2.2.6/lib/js/emojione.min.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/emojione/2.2.6/assets/css/emojione.min.css"/>
+
+<!-- <script src="{{=URL('static','js/map.js')}}" async defer></script> -->
+<!--<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBf-IjT8bV8XgVG_xl2B6U6DZA58l1GICI&callback=initMap&libraries=drawing"
+  async defer></script>-->
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBf-IjT8bV8XgVG_xl2B6U6DZA58l1GICI"
+    async defer></script><!-- this CDN is the google api without using the callback fucntion 'initMap', instead we initialize the map with Vue in default_index.js -->
 {{end}}
 
 <div class="main_content">
@@ -20,10 +26,7 @@
 
         </div>
 
-
-
-
-        <div v-if="page=='event_view'">
+        <div id="event_view" v-if="page=='event_view'">
             <form>
 
 
@@ -47,12 +50,15 @@
                   </select>
               </div>
 
-              <button type="submit" class="btn btn-default">PostMarker</button>
+              <button type="submit" v-on:submit="addMarker" class="btn btn-default">PostMarker</button>
             </form>
         </div>
-    </div>
 
-    <div id="map"></div>
+        <div id="map"></div>
+
+    </div><!--vue-div-->
+
+
 
 </div>
 
