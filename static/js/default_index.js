@@ -70,10 +70,10 @@ var app = function() {
         //console.log(map);
     };
 
-    self.addMarker = function() {
+    self.addMarker = function(latt, long) {
         map.addMarker({
-            lat: 36.9914,
-            lng: -122.0609,
+            lat: latt,
+            lng: long,
             title: 'hello!',
             infoWindow: {
                 content: '<p>HTML Content</p>'
@@ -93,6 +93,8 @@ var app = function() {
             page: 'event_view',
             events: [],
             markers: [],
+            latt: 0,
+            long: 0
 
         },
         methods: {
