@@ -20,7 +20,13 @@ def translate_event(event):
     event_dict['title'] = event.title
     event_dict['description'] = event.description
     event_dict['edited_on'] = event.edited_on
-    event_dict['infobox_content'] = event.title + '\n' + event.description + '<button onclick="fire();" class="btn btn-default">like</button>' + '<button onclick="del();" class="btn btn-default">del</button>'
+
+    #lol how is there not a better way to do this in vue
+    event_dict['infobox_content'] = event.title + '\n' + event.description + '<button onclick="APP.vue.fire('+str(
+        event.id)+');" class="btn ' \
+          'btn-default">like</button>' + '<button ' \
+                 'onclick="APP.vue.del('+ str(event.id)+');" class="btn ' \
+                 'btn-default">del</button>'
     event_dict['id'] = event.id
     if auth.user:
         check = db(db.confirmations.event_id == event.id,
@@ -31,13 +37,15 @@ def translate_event(event):
             event_dict['attending'] = False
     else:
         event_dict['attending'] = False
-    confirmations = [x for x in db(db.confirmations.event_id == event.id,
-                       db.confirmations.confirmation==True).select()]
+    confirmations = [x for x in db(db.confirmations.event_id == event.id).select() if x.confirmation == True]
+    print(confirmations)
     event_dict['total_attendees'] = len(confirmations)
 
     if len(confirmations) > 0:
         event_dict['marker_url'] = URL('static', 'images/fire.png')
+        print('wtf')
     else:
+        print('huh')
         event_dict['marker_url'] = URL('static', 'images/poopoo.png')
 
     return event_dict
@@ -68,12 +76,18 @@ def addevent():
 
 @auth.requires_login()
 def confirm():
+    print('huh')
     event_id = request.vars.event_id
     user_id = auth.user.id
-    is_real = bool(request.vars.isreal)
-    event = db(db.confirmations.user_id==user_id,db.confirmations.event_id == event_id).select().first()
+    is_real = False if request.vars.isreal == 'false' else True
+    event = db((db.confirmations.user_id==user_id) & (db.confirmations.event_id == event_id)).select().first()
     if event:
-        db(db.confirmations.user_id==user_id, db.confirmations.event_id==event_id).select().first().update_record(
-            confirmation=is_real)
+        print('okay weird')
+        print(event)
+        event.update_record(confirmation=is_real)
+
     else:
+        print('huh')
         db.confirmations.insert(user_id=user_id, event_id=event_id, confirmation=is_real)
+    response.status = 201
+    return response.json('wegudfam')

@@ -28,7 +28,7 @@ db.define_table('events',
 db.define_table('confirmations',
                 Field('user_id', db.auth_user, required=True, default=auth.user_id),
                 Field('event_id', db.events, required=True),
-                Field('confirmation', 'boolean', required=True, default=True),
+                Field('confirmation', 'boolean', required=True),
                 Field('created_on', 'datetime', default=datetime.datetime.utcnow()),
                 Field('edited_on', 'datetime', update=datetime.datetime.utcnow()))
 

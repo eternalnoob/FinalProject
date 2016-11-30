@@ -69,10 +69,35 @@ var app = function() {
         //console.log(event);
     };
 
+    make_feedback = function(id, bool){
+        console.log(bool);
+        $.post(
+            feedbackUrl,
+            {
+                event_id: id,
+                isreal: bool
+            },
+            function(data){
+                console.log(data);
+                console.log("huh");
+                self.load_events();
+            }
+        )
+    };
 
-    self.fire = function(){
+
+    self.fire = function(id){
         console.log("FIRE");
-    }
+        console.log("WE STARTED THE FIRE AT" + id.toString());
+        /*is googoo*/
+        make_feedback(id, true);
+    };
+    self.del =  function(id) {
+        console.log("NOFIRE");
+        console.log("WE STOPPED THE FIRE AT" + id.toString());
+        /* is poopoo*/
+        make_feedback(id, false);
+    };
 
 
     self.add_to_map = function(event) {
@@ -107,7 +132,6 @@ var app = function() {
 
     };
 
-
     self.load_events = function() {
         $.get(getMarkerUrl, function(data) {
             if (self.vue.events != data.events){
@@ -138,7 +162,8 @@ var app = function() {
         methods: {
             initmap         : self.initmap,
             add_event_marker: self.add_event_marker,
-            fire: self.fire
+            fire: self.fire,
+            del: self.del
         }
 
     });

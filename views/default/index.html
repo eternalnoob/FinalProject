@@ -10,6 +10,7 @@
     var my_url = "{{=URL('api', 'my_method', hmac_key=session.hmac_key)}}";
     var getMarkerUrl = "{{=URL('api', 'getmarkers', hmac_key=session.hmac_key)}}";
     var addEventUrl = "{{=URL('api', 'addevent', hmac_key=session.hmac_key)}}";
+    var feedbackUrl = "{{=URL('api', 'confirm', hmac_key=session.hmac_key)}}";
 </script>
 <link rel="stylesheet" href="{{URL('static', 'css/bootstrap-datetimepicker.min.css')}}"/>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/emojione/2.2.6/assets/css/emojione.min.css"/>
@@ -36,7 +37,7 @@
                     <input v-model="title" type="text" class="form-control" placeholder="event title">
                 </div>
                 <div class="form-group">
-                    <input v-model="desc" type="text" class="form-control" placeholder="event description">
+                    <textarea v-model="desc" type="text" class="form-control" placeholder="event description"></textarea>
                 </div>
 
                 <div class="form-group">
@@ -48,7 +49,6 @@
                     </div>
                 </div>
 
-
                 <button type="submit" v-on:click.prevent="add_event_marker(latt, long, title, desc)" class="btn btn-default">PostMarker</button>
 
             </form>
@@ -56,16 +56,6 @@
         </div>
 
         <div id="map" class="col-xs-7">
-            <script>
-                // these need to talk to our Vue Object 
-                function fire() {
-                    alert("FIRE");
-                };
-
-                function del() {
-                    alert("DEL");
-                };
-            </script>
         </div>
     </div>
 </div>
