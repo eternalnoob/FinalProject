@@ -11,11 +11,16 @@ var app = function() {
             title: event.title,
             desc: event.description,
             infoWindow: {
-                content: event.infobox_content,
+                content: event.infobox_content
             }
         };
         //console.log(event);
     };
+
+
+    self.fire = function(){
+        console.log("FIRE");
+    }
 
 
     self.add_to_map = function(event) {
@@ -92,6 +97,7 @@ var app = function() {
         methods: {
             initmap         : self.initmap,
             add_event_marker: self.add_event_marker,
+            fire: self.fire
         }
 
     });
