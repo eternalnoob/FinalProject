@@ -20,7 +20,7 @@ def translate_event(event):
     event_dict['title'] = event.title
     event_dict['description'] = event.description
     event_dict['edited_on'] = event.edited_on
-    event_dict['infobox_content'] = event.title + ': ' + event.description
+    event_dict['infobox_content'] = event.title + '\n' + event.description
     event_dict['id'] = event.id
     if auth.user:
         check = db(db.confirmations.event_id == event.id,

@@ -7,14 +7,14 @@ var app = function() {
         return {
             lat: event.lat,
             lng: event.lng,
-            infoWindow: {
-                content: event.infobox_content
-            },
             icon: event.marker_url,
             title: event.title,
-            desc: event.description
-
+            desc: event.description,
+            infoWindow: {
+                content: event.infobox_content,
+            }
         };
+        //console.log(event);
     };
 
 
@@ -32,14 +32,14 @@ var app = function() {
             {
                 latitude   : latt,
                 longitude  : long,
-                title      : '<p>'+title+'</p>',
+                title      : '<h5>'+title+'</h5>',
                 description: '<p>'+desc+'</p>',
                 date       : date_string
             },
             function(data) {
                 self.add_to_map(data);
-            }
-        )
+                console.log(data);
+            })
     };
 
 
@@ -98,7 +98,7 @@ var app = function() {
 
     self.initmap(); // googleializes the map on reload
     self.load_events(); //first load
-    self.auto_refresh(); //set to refresh page so we see all events
+    //self.auto_refresh(); //set to refresh page so we see all events
     return self;
 };
 
