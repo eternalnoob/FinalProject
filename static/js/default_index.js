@@ -18,6 +18,7 @@ var app = function() {
 
 
     self.add_to_map = function(event) {
+        // addMarker is a Gmaps method
         self.vue.map.addMarker(make_marker_dict(event));
     };
 
@@ -36,6 +37,7 @@ var app = function() {
             },
             function(data) {
                 self.add_to_map(data);
+                console.log(data);
             }
         )
     };
@@ -88,11 +90,8 @@ var app = function() {
             map       : null
         },
         methods: {
-            get_more        : self.get_more,
             initmap         : self.initmap,
             add_event_marker: self.add_event_marker,
-            map             : self.map,
-            logMap          : self.logMap
         }
 
     });
