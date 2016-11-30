@@ -59,17 +59,17 @@
 	    Vue.config.silent = false; // show all warnings
 
 	    // Extends an array
-	    self.extend = function(a, b) {
+	    self.extend = function (a, b) {
 	        for (var i = 0; i < b.length; i++) {
 	            a.push(b[i]);
 	        }
 	    };
 
-	    self.load_events = function() {
+	    self.load_events = function () {
 	        $.get(
 	            getMarkerUrl,
-	            function(data) {
-	                if (self.vue.events != data.events){
+	            function (data) {
+	                if (self.vue.events != data.events) {
 	                    self.vue.map.removeMarkers();
 	                    self.vue.events = data.events;
 	                    self.show_events();
@@ -77,6 +77,15 @@
 	            }
 	        )
 	    };
+
+	    self.first_load = function () {
+	        self.load_events();
+	        $(function () {
+	                $('#datetimepicker1').datetimepicker();
+	            });
+	        $("#vue-div").show();
+	    };
+
 
 	    self.show_events = function() {
 	        self.vue.map.addMarkers(self.vue.events.map(make_marker_dict));
@@ -97,6 +106,10 @@
 
 	    };
 
+	    make_infobox = function(event) {
+	        template = '<p>test</p>'
+	    };
+
 	    make_marker_dict = function(event) {
 	        return {
 	            lat: event.lat,
@@ -113,16 +126,17 @@
 	        self.vue.map.addMarker(make_marker_dict(event));
 	    };
 
-	    self.addMarker = function(latt, long) {
+	    self.addMarker = function(latt, long, title, description) {
 	        var date = new Date();
 	        var muhstring = date.toISOString();
+	        $('#datetimepicker').data("DateTimePicker").data();
 	        console.log(map);
 	        $.post(addEventUrl,
 	            {
 	                latitude: latt,
 	                longitude: long,
-	                title: 'BOW BOW BOW BOW BOW BOW',
-	                description: 'BAZINGA',
+	                title: title,
+	                description: description,
 	                date: muhstring
 	            },
 	            function(data) {
@@ -146,6 +160,7 @@
 	            latt: 0,
 	            long: 0,
 	            event_name: '',
+	            description: '',
 	            map: null
 	        },
 	        methods: {
@@ -159,7 +174,7 @@
 	    });
 
 	    self.initmap(); // googleializes the map on reload
-	    self.load_events(); //first load
+	    self.first_load();
 	    self.auto_refresh(); //set to refresh page so we see all events
 	    //self.addMarker();
 

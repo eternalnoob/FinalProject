@@ -43,7 +43,7 @@ def translate_event(event):
     return event_dict
 
 def getmarkers():
-    events = db(db.events.occurs_at > (datetime.datetime.utcnow() - timedelta(minutes=45))
+    events = db(db.events.occurs_at > (datetime.datetime.utcnow() - timedelta(hours=2))
                                        ).select(orderby=~db.events.occurs_at)
     return_dict = {'events': []}
     for event in events:
@@ -58,7 +58,7 @@ def addevent():
     title = request.vars.title
     occur_date = request.vars.date
     description = request.vars.description
-    occur_date = datetime.datetime.strptime(occur_date, "%Y-%m-%dT%H:%M:%S.%fZ")
+    occur_date = datetime.datetime.strptime(occur_date, "%Y-%m-%dT%H:%M:%S")
     # parses ISO string, just call toISOString() on any javascript date object
     event_id = db.events.insert(latitude=lat, longitude=lng, title=title, occurs_at=occur_date,
                                 description=description, creator=auth.user.id)
