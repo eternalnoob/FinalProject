@@ -81,8 +81,6 @@ var app = function() {
 
 
     self.add_event_marker = function(latt, long, title, desc) {
-        var date = new Date();
-        var muhstring = date.toISOString();
         var moment = $('#datetimepicker1').data("DateTimePicker").date();
         $.post(addEventUrl,
             {

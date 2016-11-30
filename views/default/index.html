@@ -1,8 +1,7 @@
 {{extend 'layout.html'}}
 
 {{block head}}
-<script defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBf-IjT8bV8XgVG_xl2B6U6DZA58l1GICI"></script
-><!-- this CDN is the google api without using the callback fucntion 'initMap', instead we initialize the map with Vue in default_index.js -->
+<script defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBf-IjT8bV8XgVG_xl2B6U6DZA58l1GICI"></script>
 <script defer src="{{=URL('static', 'js/gmaps.js')}}"></script>
 <script defer src="{{=URL('static', 'js/vue.js')}}"></script>
 <script src="https://cdn.jsdelivr.net/emojione/2.2.6/lib/js/emojione.min.js"></script>
