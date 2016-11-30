@@ -1,4 +1,3 @@
-// This is the js for the default/index.html view.
 var app = function() {
     var self = {};
     Vue.config.silent = false; // show all warnings
@@ -12,7 +11,9 @@ var app = function() {
                 content: event.infobox_content
             },
             icon: event.marker_url,
-            title: event.title
+            title: event.title,
+            desc: event.description
+
         };
     };
 
@@ -37,7 +38,6 @@ var app = function() {
             },
             function(data) {
                 self.add_to_map(data);
-                console.log(data);
             }
         )
     };
