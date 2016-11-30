@@ -15,7 +15,7 @@
 
  #event_view {
      float: left;
-     padding: 0 225px 0 0;
+     padding: 20px 200px 0 40px;
  }
  /* Optional: Makes the sample page fill the window. */
  /*html, body {
