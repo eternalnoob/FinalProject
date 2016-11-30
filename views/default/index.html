@@ -5,13 +5,13 @@
 ><!-- this CDN is the google api without using the callback fucntion 'initMap', instead we initialize the map with Vue in default_index.js -->
 <script defer src="{{=URL('static', 'js/gmaps.js')}}"></script>
 <script defer src="{{=URL('static', 'js/vue.js')}}"></script>
-<!-- <script src="{{=URL('static','js/vue-google-maps.js')}}"></script> -->
+<script src="https://cdn.jsdelivr.net/emojione/2.2.6/lib/js/emojione.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/emojione/2.2.6/assets/css/emojione.min.css"/>
 <script>
     var my_url = "{{=URL('api', 'my_method', hmac_key=session.hmac_key)}}";
     var getMarkerUrl = "{{=URL('api', 'getmarkers', hmac_key=session.hmac_key)}}";
     var addEventUrl = "{{=URL('api', 'addevent', hmac_key=session.hmac_key)}}";
 </script>
-<script src="https://cdn.jsdelivr.net/emojione/2.2.6/lib/js/emojione.min.js"></script>
 <link rel="stylesheet" href="{{URL('static', 'css/bootstrap-datetimepicker.min.css')}}"/>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/emojione/2.2.6/assets/css/emojione.min.css"/>
 <script defer src="{{=URL('static', 'js/moment.js')}}"></script>
@@ -20,32 +20,26 @@
 {{end}}
 
 <div class="main_content">
-
     <div id="vue-div" class="row display:none">
-        <!-- Your code goes here.  Remember to call $("#vue-div").show() once you get the data for the first time. -->
-        <div v-if="page=='decision_bar'">
 
-        </div>
-
-        <div class="col-xs-3" id="event_view" v-if="page=='event_view'">
+        <div id="event_view" class="col-xs-3" v-if="page=='event_view'">
             <form>
+
                 <div class="form-group">
                     <input v-model="latt" type="text" class="form-control" placeholder="latt">
                 </div>
-
 
                 <div class="form-group">
                     <input v-model="long" type="text" class="form-control" placeholder="long">
                 </div>
 
                 <div class="form-group">
-                    <input v-model="event_name" type="text" class="form-control" placeholder="event name">
+                    <input v-model="title" type="text" class="form-control" placeholder="event title">
+                </div>
+                <div class="form-group">
+                    <input v-model="desc" type="text" class="form-control" placeholder="event description">
                 </div>
 
-                <div class="form-group">
-                    <textarea v-model="description" type="text" class="form-control" placeholder="event
-                    name"></textarea>
-                </div>
                 <div class="form-group">
                     <div class='input-group date' id='datetimepicker1'>
                         <input type='text' class="form-control" />
@@ -55,18 +49,27 @@
                     </div>
                 </div>
 
-                <button type="submit" v-on:click.prevent="addMarker(latt, long, event_name, description)" class="btn
-                btn-default">PostMarker</button>
+
+                <button type="submit" v-on:click.prevent="add_event_marker(latt, long, title, desc)" class="btn btn-default">PostMarker</button>
+
             </form>
+
         </div>
 
-        <div id="map"></div>
+        <div id="map" class="col-xs-7">
+            <script>
+                function fire() {
+                    alert("FIRE");
+                };
 
-    </div><!--vue-div-->
-
-
-
+                function del() {
+                    alert("DEL");
+                };
+            </script>
+        </div>
+    </div>
 </div>
+
 
 
 <script defer src="{{=URL('static', 'js/default_index.js')}}"></script>

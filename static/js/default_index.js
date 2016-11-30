@@ -6,17 +6,17 @@ var app = function() {
     Vue.config.silent = false; // show all warnings
 
     // Extends an array
-    self.extend = function (a, b) {
+    self.extend = function(a, b) {
         for (var i = 0; i < b.length; i++) {
             a.push(b[i]);
         }
     };
 
-    self.load_events = function () {
+    self.load_events = function() {
         $.get(
             getMarkerUrl,
-            function (data) {
-                if (self.vue.events != data.events) {
+            function(data) {
+                if (self.vue.events != data.events){
                     self.vue.map.removeMarkers();
                     self.vue.events = data.events;
                     self.show_events();
@@ -24,15 +24,6 @@ var app = function() {
             }
         )
     };
-
-    self.first_load = function () {
-        self.load_events();
-        $(function () {
-                $('#datetimepicker1').datetimepicker();
-            });
-        $("#vue-div").show();
-    };
-
 
     self.show_events = function() {
         self.vue.map.addMarkers(self.vue.events.map(make_marker_dict));
@@ -53,6 +44,14 @@ var app = function() {
 
     };
 
+    self.first_load = function () {
+        self.load_events();
+        $(function () {
+            $('#datetimepicker1').datetimepicker();
+        });
+        $("#vue-div").show();
+    };
+
     make_infobox = function(event) {
         template = '<p>test</p>'
     };
@@ -61,19 +60,27 @@ var app = function() {
         return {
             lat: event.lat,
             lng: event.lng,
+            desc: event.description,
             infoWindow: {
                 content: event.infobox_content
-            },
-            icon: event.marker_url,
-            title: event.title
+            }
         };
+        //console.log(event);
     };
 
+
+    self.fire = function(){
+        console.log("FIRE");
+    }
+
+
     self.add_to_map = function(event) {
+        // addMarker is a Gmaps method
         self.vue.map.addMarker(make_marker_dict(event));
     };
 
-    self.addMarker = function(latt, long, title, description) {
+
+    self.add_event_marker = function(latt, long, title, desc) {
         var date = new Date();
         var muhstring = date.toISOString();
         var moment = $('#datetimepicker1').data("DateTimePicker").date();
@@ -81,15 +88,35 @@ var app = function() {
             {
                 latitude: latt,
                 longitude: long,
-                title: title,
-                description: description,
+                title: '<h5>'+title+'</h5>',
+                description: '<p>' + desc+'</p>',
                 date: moment.utc().format('YYYY-MM-DDTHH:mm:ss')
             },
             function(data) {
                 self.add_to_map(data);
-                console.log("AWW YUS");
+                console.log(data);
+            })
+    };
+
+
+    self.initmap = function() {
+        self.vue.map = new GMaps({
+            el : '#map',
+            lat: 36.9914,
+            lng: -122.0609
+        });
+
+    };
+
+
+    self.load_events = function() {
+        $.get(getMarkerUrl, function(data) {
+            if (self.vue.events != data.events){
+                self.vue.map.removeMarkers();
+                self.vue.events = data.events;
+                self.show_events();
             }
-            )
+        })
     };
 
 
@@ -99,22 +126,20 @@ var app = function() {
         delimiters: ['${', '}'],
         unsafeDelimiters: ['!{', '}'],
         data: {
-            has_more: false,
-            page: 'event_view',
-            events: [],
-            markers: [],
-            latt: 0,
-            long: 0,
-            event_name: '',
-            description: '',
-            map: null
+            has_more  : false,
+            page      : 'event_view',
+            events    : [],
+            markers   : [],
+            latt      : 36.99,
+            long      : -122.05,
+            title     : '',
+            desc      : '',
+            map       : null
         },
         methods: {
-            get_more: self.get_more,
-            initmap: self.initmap,
-            addMarker: self.addMarker,
-            map: self.map,
-            logMap: self.logMap
+            initmap         : self.initmap,
+            add_event_marker: self.add_event_marker,
+            fire: self.fire
         }
 
     });
