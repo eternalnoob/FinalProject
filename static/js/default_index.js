@@ -63,7 +63,8 @@ var app = function() {
             desc: event.description,
             infoWindow: {
                 content: event.infobox_content
-            }
+            },
+            icon: event.marker_url
         };
         //console.log(event);
     };
