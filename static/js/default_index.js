@@ -12,26 +12,13 @@ var app = function() {
         }
     };
 
-    self.load_events = function() {
-        $.get(
-            getMarkerUrl,
-            function(data) {
-                if (self.vue.events != data.events){
-                    self.vue.map.removeMarkers();
-                    self.vue.events = data.events;
-                    self.show_events();
-                }
-            }
-        )
-    };
-
     self.show_events = function() {
         self.vue.map.addMarkers(self.vue.events.map(make_marker_dict));
     };
 
     self.auto_refresh = function () {
         setInterval(
-            self.load_events, 10000
+            self.load_events, 30000
         )
     };
 
@@ -41,13 +28,58 @@ var app = function() {
             lat: 36.9914,
             lng: -122.0609
         });
-
+        test = self.vue.map;
+        self.vue.map.setContextMenu({
+            control: 'map',
+            options:[{
+                title: 'Add marker',
+                name: 'add_marker',
+                action: function (e) {
+                    this.addMarker({
+                        lat: e.latLng.lat(),
+                        lng: e.latLng.lng(),
+                        title: 'New marker'
+                    });
+                }
+            }
+            ]
+        })
+        test.addControl({
+            position: 'top_center',
+            content: 'Geolocate',
+            style: {
+                margin: '5px',
+                padding: '1px 6px',
+                border: 'solid 1px #717B87',
+                background: '#fff'
+            },
+            events: {
+                click: function(){
+                    if (navigator.geolocation) {
+                        navigator.geolocation.getCurrentPosition(function(position) {
+                            var pos = {
+                                lat: position.coords.latitude,
+                                lng: position.coords.longitude
+                            };
+                            test.setCenter(pos);
+                        }, function() {
+                            alert('Your browser is old AF!');
+                        });
+                    }
+                }
+            }
+        });
     };
 
     self.first_load = function () {
         self.load_events();
         $(function () {
-            $('#datetimepicker1').datetimepicker();
+            $('#datetimepicker1').datetimepicker({
+                //don't let them set times less than right now
+                minDate: moment(),
+                //don't plan ahead too much, either, that's bad
+                maxDate: moment().add(15, 'days')
+            });
         });
         $("#vue-div").show();
     };
@@ -109,36 +141,31 @@ var app = function() {
 
     self.add_event_marker = function(address, title, desc) {
         var moment = $('#datetimepicker1').data("DateTimePicker").date();
-        GMaps.geocode({
-            address: address.trim(),
-            callback: function(results, status) {
-            var latlng = results[0].geometry.location;
-            console.log(latlng);
-            $.post(addEventUrl,
-                {
-                    latitude: latlng.lat(),
-                    longitude: latlng.lng(),
-                    title: title,
-                    description: desc,
-                    date: moment.utc().format('YYYY-MM-DDTHH:mm:ss')
-                },
-                function(data) {
-                    self.add_to_map(data);
-                    console.log(data);
-                })
-            }
-        });
+        console.log(moment);
+        if(address == '' || title == '' || desc == '' || moment == null){
 
-    };
-
-
-    self.initmap = function() {
-        self.vue.map = new GMaps({
-            el : '#map',
-            lat: 36.9914,
-            lng: -122.0609
-        });
-
+        }
+        else{
+            GMaps.geocode({
+                address: address.trim(),
+                callback: function(results, status) {
+                    var latlng = results[0].geometry.location;
+                    console.log(latlng);
+                    $.post(addEventUrl,
+                        {
+                            latitude: latlng.lat(),
+                            longitude: latlng.lng(),
+                            title: title,
+                            description: desc,
+                            date: moment.utc().format('YYYY-MM-DDTHH:mm:ss')
+                        },
+                        function(data) {
+                            self.add_to_map(data);
+                            console.log(data);
+                        })
+                }
+            });
+        }
     };
 
     self.load_events = function() {
@@ -151,6 +178,13 @@ var app = function() {
         })
     };
 
+    self.check_login = function() {
+        $.get(checkLoginUrl,
+            function(data){
+                self.vue.islogged = data.islogged;
+            }
+        );
+    };
 
     // Complete as needed.
     self.vue = new Vue({
@@ -158,12 +192,13 @@ var app = function() {
         delimiters: ['${', '}'],
         unsafeDelimiters: ['!{', '}'],
         data: {
-            has_more  : false,
+            islogged  : false,
             page      : 'event_view',
             events    : [],
             markers   : [],
-            latt      : 36.99,
-            long      : -122.05,
+            addr      : '',
+            latt      : null,
+            long      : null,
             title     : '',
             desc      : '',
             map       : null
@@ -177,6 +212,7 @@ var app = function() {
 
     });
 
+    self.check_login();
     self.initmap(); // googleializes the map on reload
     self.first_load();
     self.auto_refresh(); //set to refresh page so we see all events

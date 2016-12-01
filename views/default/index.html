@@ -11,6 +11,7 @@
     var getMarkerUrl = "{{=URL('api', 'getmarkers', hmac_key=session.hmac_key)}}";
     var addEventUrl = "{{=URL('api', 'addevent', hmac_key=session.hmac_key)}}";
     var feedbackUrl = "{{=URL('api', 'confirm', hmac_key=session.hmac_key)}}";
+    var checkLoginUrl = "{{=URL('api', 'checklogin', hmac_key=session.hmac_key)}}";
 </script>
 <link rel="stylesheet" href="{{URL('static', 'css/bootstrap-datetimepicker.min.css')}}"/>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/emojione/2.2.6/assets/css/emojione.min.css"/>
@@ -22,11 +23,11 @@
 <div class="main_content">
     <div id="vue-div" class="row display:none">
 
-        <div id="event_view" class="col-xs-3" v-if="page=='event_view'">
+        <div id="event_view" class="col-xs-4" v-if="page=='event_view'">
             <form>
 
                 <div class="form-group">
-                    <input v-model="latt" type="text" class="form-control" placeholder="address">
+                    <input v-model="addr" type="text" class="form-control" placeholder="address">
                 </div>
 
                 <div class="form-group">
@@ -45,7 +46,8 @@
                     </div>
                 </div>
 
-                <button type="submit" v-on:click.prevent="add_event_marker(latt, title, desc)" class="btn btn-default">PostMarker</button>
+                <button type="submit" v-on:click.prevent="add_event_marker(latt, title, desc)" class="btn btn-default"
+                v-bind:class="{disabled: !islogged}">PostMarker</button>
 
             </form>
 

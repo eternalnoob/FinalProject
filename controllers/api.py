@@ -50,12 +50,12 @@ def translate_event(event):
 
     content_template= """
 <div class="center">
-    <span class="row">
+    <h5>
         {{=event['title']}}
-    </span>
-    <span class="row">
+    </h5>
+    <p style="white-space: pre-space;">
         {{=event['description']}}
-    </span>
+    </p>
     <span class="row">
         Liked by: {{=event['total_attendees']}} users
     </span>
@@ -63,11 +63,11 @@ def translate_event(event):
         Disliked by: {{=event['total_haters']}} users
     </span>
     {{if auth.user:}}
-        <div class="center">
-            <button onclick="APP.vue.fire({{= str(event['id'])}})" class="btn btn-xs btn-success">
+        <div class="btn-group-sm btn-group">
+            <button onclick="APP.vue.fire({{= str(event['id'])}})" class="btn btn-success">
                 Like
             </button>
-            <button onclick="APP.vue.del({{= str(event['id'])}})" class="btn btn-xs btn-warning">
+            <button onclick="APP.vue.del({{= str(event['id'])}})" class="btn btn-warning">
                 Dislike
             </button>
         </div>
@@ -121,6 +121,9 @@ def deleteevent():
     event_id = request.vars.event_id
     user_id = auth.user.id
     db((db.events.id == event_id) & (db.events.created_by == user_id)).delete()
+
+def checklogin():
+    return response.json(dict(islogged= auth.user is not None))
 
 
 @auth.requires_login()
