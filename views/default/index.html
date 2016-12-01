@@ -26,11 +26,7 @@
             <form>
 
                 <div class="form-group">
-                    <input v-model="latt" type="text" class="form-control" placeholder="latt">
-                </div>
-
-                <div class="form-group">
-                    <input v-model="long" type="text" class="form-control" placeholder="long">
+                    <input v-model="latt" type="text" class="form-control" placeholder="address">
                 </div>
 
                 <div class="form-group">
@@ -49,7 +45,7 @@
                     </div>
                 </div>
 
-                <button type="submit" v-on:click.prevent="add_event_marker(latt, long, title, desc)" class="btn btn-default">PostMarker</button>
+                <button type="submit" v-on:click.prevent="add_event_marker(latt, title, desc)" class="btn btn-default">PostMarker</button>
 
             </form>
 

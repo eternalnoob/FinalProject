@@ -1,6 +1,9 @@
 # Here go your api methods.
 import datetime
 from datetime import timedelta
+from template import render
+import StringIO
+import os
 
 def get_user_full_name(user_id):
     user = db(db.auth_user.id == user_id).select().first()
@@ -20,13 +23,9 @@ def translate_event(event):
     event_dict['title'] = event.title
     event_dict['description'] = event.description
     event_dict['edited_on'] = event.edited_on
-
+    logged_in_infobox ='<div class="btn btn-group">{}</div>'
     #lol how is there not a better way to do this in vue
-    event_dict['infobox_content'] = event.title + '\n' + event.description + '<button onclick="APP.vue.fire('+str(
-        event.id)+');" class="btn ' \
-          'btn-default">like</button>' + '<button ' \
-                 'onclick="APP.vue.del('+ str(event.id)+');" class="btn ' \
-                 'btn-default">del</button>'
+
     event_dict['id'] = event.id
     if auth.user:
         check = db(db.confirmations.event_id == event.id,
@@ -37,16 +36,58 @@ def translate_event(event):
             event_dict['attending'] = False
     else:
         event_dict['attending'] = False
-    confirmations = [x for x in db(db.confirmations.event_id == event.id).select() if x.confirmation == True]
-    print(confirmations)
-    event_dict['total_attendees'] = len(confirmations)
+    confirmations = [x for x in db(db.confirmations.event_id == event.id).select()]
+    positive = []
+    negative = []
+    for conf in confirmations:
+        if conf.confirmation is True:
+            positive.append(conf)
+        else:
+            negative.append(conf)
 
-    if len(confirmations) > 0:
+    event_dict['total_attendees'] = len(positive)
+    event_dict['total_haters'] = len(negative)
+
+    content_template= """
+<div class="center">
+    <span class="row">
+        {{=event['title']}}
+    </span>
+    <span class="row">
+        {{=event['description']}}
+    </span>
+    <span class="row">
+        Liked by: {{=event['total_attendees']}} users
+    </span>
+    <span class="row">
+        Disliked by: {{=event['total_haters']}} users
+    </span>
+    {{if auth.user:}}
+        <div class="center">
+            <button onclick="APP.vue.fire({{= str(event['id'])}})" class="btn btn-xs btn-success">
+                Like
+            </button>
+            <button onclick="APP.vue.del({{= str(event['id'])}})" class="btn btn-xs btn-warning">
+                Dislike
+            </button>
+        </div>
+    {{pass}}
+</div>
+    """
+
+    if len(positive) > len(negative):
         event_dict['marker_url'] = URL('static', 'images/fire.png')
-        print('wtf')
-    else:
-        print('huh')
+        print('fire af')
+    elif len(positive) < len(negative):
         event_dict['marker_url'] = URL('static', 'images/poopoo.png')
+        print('poopoo af')
+    else:
+        #MAKE IT DO EGGPLANT
+        event_dict['marker_url'] = URL('static', 'images/eggplant.png')
+        print('eggplant')
+
+    #how is it this hard to do server side rendering in web2py?
+    event_dict['infobox_content'] = render(content=content_template, context=dict(event=event_dict, auth=auth))
 
     return event_dict
 
@@ -61,8 +102,8 @@ def getmarkers():
 
 @auth.requires_login()
 def addevent():
-    lat = request.vars.latitude
-    lng = request.vars.longitude
+    lat = float(request.vars.latitude)
+    lng = float(request.vars.longitude)
     title = request.vars.title
     occur_date = request.vars.date
     description = request.vars.description
@@ -73,6 +114,14 @@ def addevent():
     event = db(db.events.id == event_id).select().first()
     response.status = 201
     return response.json(translate_event(event))
+
+@auth.requires_login()
+def deleteevent():
+    #if you make an event so lit even you can't handle it?
+    event_id = request.vars.event_id
+    user_id = auth.user.id
+    db((db.events.id == event_id) & (db.events.created_by == user_id)).delete()
+
 
 @auth.requires_login()
 def confirm():

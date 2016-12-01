@@ -61,6 +61,7 @@ var app = function() {
             lat: event.lat,
             lng: event.lng,
             desc: event.description,
+            title: event.title,
             infoWindow: {
                 content: event.infobox_content
             },
@@ -106,20 +107,28 @@ var app = function() {
     };
 
 
-    self.add_event_marker = function(latt, long, title, desc) {
+    self.add_event_marker = function(address, title, desc) {
         var moment = $('#datetimepicker1').data("DateTimePicker").date();
-        $.post(addEventUrl,
-            {
-                latitude: latt,
-                longitude: long,
-                title: '<h5>'+title+'</h5>',
-                description: '<p>' + desc+'</p>',
-                date: moment.utc().format('YYYY-MM-DDTHH:mm:ss')
-            },
-            function(data) {
-                self.add_to_map(data);
-                console.log(data);
-            })
+        GMaps.geocode({
+            address: address.trim(),
+            callback: function(results, status) {
+            var latlng = results[0].geometry.location;
+            console.log(latlng);
+            $.post(addEventUrl,
+                {
+                    latitude: latlng.lat(),
+                    longitude: latlng.lng(),
+                    title: title,
+                    description: desc,
+                    date: moment.utc().format('YYYY-MM-DDTHH:mm:ss')
+                },
+                function(data) {
+                    self.add_to_map(data);
+                    console.log(data);
+                })
+            }
+        });
+
     };
 
 

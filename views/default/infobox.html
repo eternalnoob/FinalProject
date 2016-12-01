@@ -1,0 +1,26 @@
+<div>
+    <div class="row">
+        {{=event['title']}}
+    </div>
+    <div class="row">
+        {{=event['description']}}
+    </div>
+    <div class="row">
+        <div class="col-xs-3">
+            Liked by: {{=event['total_attendees']}} users
+        </div>
+        <div class="col-xs-3">
+            Disliked by: {{=event['total_haters']}} users
+        </div>
+    {{if auth.user:}}
+        <div class="btn btn-group">
+            <button onclick="APP.vue.fire({{= str(event['id'])}})" class="btn btn-success">
+                Like
+            </button>
+            <button onclick="APP.vue.del({{= str(event['id'])}})" class="btn btn-warning">
+                Dislike
+            </button>
+        </div>
+    {{pass}}
+    </div>
+</div>
