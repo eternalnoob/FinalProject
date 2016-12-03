@@ -85,6 +85,7 @@ var app = function() {
         });
         //now load the events
         self.first_load();
+        self.vue.map.addListener('idle', self.load_events);
     };
 
     self.first_load = function () {
@@ -97,7 +98,6 @@ var app = function() {
                 maxDate: moment().add(15, 'days')
             });
         });
-        $("#vue-div").show();
     };
 
     make_infobox = function(event) {
@@ -238,10 +238,12 @@ var app = function() {
 
     self.load_events = function() {
         $.get(getMarkerUrl, function(data) {
-            if (self.vue.events != data.events){
+            if (!cmpevents(data.events, self.vue.events)){
+
+                console.log(data.events);
+                console.log(self.vue.events);
                 self.vue.map.removeMarkers();
                 self.vue.events = data.events;
-
                 self.show_events();
             }
         })
@@ -256,6 +258,35 @@ var app = function() {
                 self.initmap();
             }
         );
+    };
+
+
+    //compares two arrays of objects in javascript
+    function equals(events1, events2, fields) {
+        function _equals(obj1, obj2, fields) {
+            if(obj1.length != obj2.length){
+                return false;
+            }
+            else{
+                for(var j = 0; j < obj1.length; j++){
+                    for(var  i = 0; i < fields.length; i++) {
+                        if( obj1[fields[i]] !== obj2[fields[i]]){
+                            return false;
+                        }
+                    };
+                }
+            }
+            return true;
+        }
+        return _equals(events1, events2, fields);
+    }
+
+    function cmpevents(events1, events2) {
+        //used to make sure we don't constantly repopulate the events when it is not necessary
+        var fields = ['creator', 'lat', 'lng', 'occurs_at', 'description',
+            'edited_on', 'infobox_content', 'attending', 'total_haters',
+            'total_attendees', 'marker_url']
+        return equals(events1, events2, fields);
     };
 
     // Complete as needed.
@@ -278,6 +309,7 @@ var app = function() {
             usingMapMarker: false,
             //holds the current temporary marker if the user is
             currTempMarker: null,
+            currTempMarkerPos: null,
             inputError: false,
             markerError: false,
             addressError: false,

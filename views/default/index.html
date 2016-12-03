@@ -24,56 +24,73 @@
     <div id="vue-div" style="display: none">
 
         <div id="event_view" class="col-xs-4" v-if="page=='event_view'">
-            <form>
+            <div class="panel panel-primary">
+                <div class="panel-heading">Create An Event</div>
+                <form class="panel-body">
+                    <div class="form-group">
+                        <label for="address">Enter Address</label>
+                        <input v-model="addr" type="text" class="form-control"
+                               v-bind:disabled="usingMapMarker"
+                               placeholder="address" id="address">
+                    </div>
 
-                <div class="form-group">
-                    <input v-model="addr" type="text" class="form-control"
-                           v-bind:disabled="usingMapMarker"
-                           placeholder="address">
-                    <input type="checkbox" v-model="usingMapMarker" id="checkbox"><label for="checkbox">Or Place
-                    Map Marker</label>
-                </div>
-                <div v-if="markerError" class="alert alert-danger alert-dismissible" role="alert">
-                    <button type="button" class="close" v-on:click="markerError = false" aria-label="Close">
-                        <i class="fa fa-close fa-lg"
-                           aria-hidden="true"></i></button>
-                    <strong>Warning!</strong> You have not chosen a marker for this!
-                </div>
-                <div v-if="addressError" class="alert alert-danger alert-dismissible" role="alert">
-                    <button type="button" class="close" v-on:click="addressError = false" aria-label="Close">
-                        <i class="fa fa-close fa-lg"
-                           aria-hidden="true"></i></button>
-                    <strong>Warning!</strong> Your Address Search returned No results!
-                </div>
+                    <div class="form-group">
+                        <label for="checkbox">Or: Use a
+                            Map Marker</label>
+                        <input type="checkbox" v-model="usingMapMarker" id="checkbox">
+                    </div>
+                    <div v-if="markerError" class="alert alert-danger alert-dismissible" role="alert">
+                        <button type="button" class="close" v-on:click="markerError = false" aria-label="Close">
+                            <i class="fa fa-close fa-lg"
+                               aria-hidden="true"></i></button>
+                        <strong>Warning!</strong> You have not chosen a marker for this!
+                    </div>
+                    <div v-if="addressError" class="alert alert-danger alert-dismissible" role="alert">
+                        <button type="button" class="close" v-on:click="addressError = false" aria-label="Close">
+                            <i class="fa fa-close fa-lg"
+                               aria-hidden="true"></i></button>
+                        <strong>Warning!</strong> Your Address Search returned No results!
+                    </div>
 
-                <div class="form-group">
-                    <input v-model="title" type="text" class="form-control" placeholder="event title">
-                </div>
-                <div class="form-group">
-                    <textarea v-model="desc" type="text" class="form-control" placeholder="event description"></textarea>
-                </div>
 
-                <div class="form-group">
-                    <div class='input-group date' id='datetimepicker1'>
-                        <input type='text' class="form-control" />
-                        <span class="input-group-addon">
+
+                    <div class="form-group">
+                        <label for="title">Enter an event title</label>
+                        <input id="title" v-model="title" type="text" class="form-control" placeholder="event title">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="description">Enter an event description</label>
+                        <textarea v-model="desc" rows="6" id="description" type="text" class="form-control"
+                                  placeholder="event description"></textarea>
+                    </div>
+
+                    <div class="form-group">
+
+                        <label for="datetimepicker1">Enter a time the event occurs, from now until 15 days in
+                            future</label>
+                        <div class='input-group date' id='datetimepicker1'>
+                            <input type='text' class="form-control" />
+                            <span class="input-group-addon">
                         <span class="glyphicon glyphicon-calendar"></span>
                     </span>
+                        </div>
                     </div>
-                </div>
 
-                <button type="submit" v-on:click.prevent="add_event_marker(addr, title, desc)" class="btn
-                btn-default"
-                v-bind:disabled="!islogged">PostMarker</button>
-                <div v-if="inputError" class="alert alert-danger alert-dismissible" role="alert">
-                    <button type="button" class="close" v-on:click="inputError = false" aria-label="Close">
-                        <i class="fa fa-close fa-lg"
-                           aria-hidden="true"></i></button>
-                    <strong>Warning!</strong> There are errors with your input!
-                </div>
+                    <button type="submit" v-on:click.prevent="add_event_marker(addr, title, desc)" class="btn
+                btn-primary"
+                            v-bind:disabled="!islogged">Submit Event</button>
+                    <div v-if="inputError" class="alert alert-danger alert-dismissible" role="alert">
+                        <button type="button" class="close" v-on:click="inputError = false" aria-label="Close">
+                            <i class="fa fa-close fa-lg"
+                               aria-hidden="true"></i></button>
+                        <strong>Warning!</strong> There are errors with your input!
+                    </div>
 
 
-            </form>
+                </form>
+
+            </div>
 
         </div>
 
