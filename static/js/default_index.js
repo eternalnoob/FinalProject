@@ -90,14 +90,7 @@ var app = function() {
 
     self.first_load = function () {
         self.load_events();
-        $(function () {
-            $('#datetimepicker1').datetimepicker({
-                //don't let them set times less than right now
-                minDate: moment(),
-                //don't plan ahead too much, either, that's bad
-                maxDate: moment().add(15, 'days')
-            });
-        });
+        $("#vue-div").show();
     };
 
     make_infobox = function(event) {
@@ -249,6 +242,27 @@ var app = function() {
         })
     };
 
+    //stanley added this
+    self.add_event_form = function () {
+          self.goto('event_add');
+    };
+
+    //Stanley added this
+    self.goto = function(page){
+        self.vue.page = page;
+        if(page == 'event_add'){
+         //display form for user, dont forget to add vbind for logged in later!!
+            self.check_login();
+        };
+        if(page == 'event_watch'){
+          $.get(litEventsUrl,
+                function (data) {
+                    console.log(data);
+                    self.vue.hotevents = data.events;
+                })
+        };
+    };
+
     self.check_login = function() {
         $.get(checkLoginUrl,
             function(data){
@@ -296,7 +310,7 @@ var app = function() {
         unsafeDelimiters: ['!{', '}'],
         data: {
             islogged  : false,
-            page      : 'event_view',
+            page      : 'event_watch',
             events    : [],
             markers   : [],
             addr      : '',
@@ -313,13 +327,13 @@ var app = function() {
             inputError: false,
             markerError: false,
             addressError: false,
-
-            //used to display alerts to the user about invalid inputs
-
+            hotevents : []
         },
         methods: {
             initmap         : self.initmap,
             add_event_marker: self.add_event_marker,
+            add_event_form: self.add_event_form,
+            goto: self.goto,
             fire: self.fire,
             del: self.del
         }
@@ -328,6 +342,7 @@ var app = function() {
     self.check_login(); //had to inject a lot of callbacks into this, would have loved promises, but don't
                         //know the best library
     self.auto_refresh(); //set to refresh page so we see all events
+    self.goto('event_watch');
 
     $("#vue-div").show();
     return self;

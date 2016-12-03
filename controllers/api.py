@@ -96,6 +96,16 @@ def translate_event(event):
 
     return event_dict
 
+#Stanley added this
+def litevents():
+    events = db(db.events.occurs_at > (datetime.datetime.utcnow() - timedelta(hours=2))
+                                       ).select(orderby=~db.events.occurs_at)
+    return_dict = {'events': []}
+    for event in events:
+        return_dict['events'].append(translate_event(event))
+    return_dict['events'].sort(key = lambda event: event['total_attendees'])
+    return response.json(return_dict)
+
 def getmarkers():
     events = db(db.events.occurs_at > (datetime.datetime.utcnow() - timedelta(hours=2))
                                        ).select(orderby=~db.events.occurs_at)
