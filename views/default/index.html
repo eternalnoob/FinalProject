@@ -12,6 +12,7 @@
     var addEventUrl = "{{=URL('api', 'addevent', hmac_key=session.hmac_key)}}";
     var feedbackUrl = "{{=URL('api', 'confirm', hmac_key=session.hmac_key)}}";
     var checkLoginUrl = "{{=URL('api', 'checklogin', hmac_key=session.hmac_key)}}";
+    var litEventsUrl = "{{=URL('api', 'litevents', hmac_key=session.hmac_key)}}";
 </script>
 <link rel="stylesheet" href="{{URL('static', 'css/bootstrap-datetimepicker.min.css')}}"/>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/emojione/2.2.6/assets/css/emojione.min.css"/>
@@ -23,7 +24,23 @@
 <div class="main_content">
     <div id="vue-div" class="row display:none">
 
-        <div id="event_view" class="col-xs-4" v-if="page=='event_view'">
+        <div id="event_watch" class="col-xs-4" v-if="page=='event_watch'" >
+            <button class="add_event" v-on:click="add_event_form()" v-bind:class="{disabled: !islogged}" >
+                <i class="fa fa-plus-square-o" aria-hidden="true"> Add Event</i>
+            </button>
+
+            <div class="panel panel-primary">
+                <div class="panel-heading">Lit Events</div>
+                <div class="panel-body">
+                    <ol type="1">
+                <li v-for="event in hotevents">${event.title}</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+
+
+        <div id="event_add" class="col-xs-4" v-if="page=='event_add'">
             <form>
 
                 <div class="form-group">

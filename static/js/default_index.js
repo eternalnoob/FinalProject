@@ -178,6 +178,27 @@ var app = function() {
         })
     };
 
+    //stanley added this
+    self.add_event_form = function () {
+          self.goto('event_add');
+    };
+
+    //Stanley added this
+    self.goto = function(page){
+        self.vue.page = page;
+        if(page == 'event_add'){
+         //display form for user, dont forget to add vbind for logged in later!!
+            self.first_load();
+        };
+        if(page == 'event_watch'){
+          $.get(litEventsUrl,
+                function (data) {
+                    console.log(data);
+                    self.vue.hotevents = data.events;
+                })
+        };
+    };
+
     self.check_login = function() {
         $.get(checkLoginUrl,
             function(data){
@@ -193,7 +214,7 @@ var app = function() {
         unsafeDelimiters: ['!{', '}'],
         data: {
             islogged  : false,
-            page      : 'event_view',
+            page      : 'event_watch',
             events    : [],
             markers   : [],
             addr      : '',
@@ -201,11 +222,14 @@ var app = function() {
             long      : null,
             title     : '',
             desc      : '',
-            map       : null
+            map       : null,
+            hotevents : []
         },
         methods: {
             initmap         : self.initmap,
             add_event_marker: self.add_event_marker,
+            add_event_form: self.add_event_form,
+            goto: self.goto,
             fire: self.fire,
             del: self.del
         }
@@ -216,6 +240,7 @@ var app = function() {
     self.initmap(); // googleializes the map on reload
     self.first_load();
     self.auto_refresh(); //set to refresh page so we see all events
+    self.goto('event_watch');
 
     return self;
 };
