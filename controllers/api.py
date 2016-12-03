@@ -107,14 +107,15 @@ def getmarkers():
 
 @auth.requires_login()
 def addevent():
-    lat = float(request.vars.latitude)
-    lng = float(request.vars.longitude)
-    title = request.vars.title
-    occur_date = request.vars.date
-    description = request.vars.description
-    if( lat and  lng and  title and  occur_date and description ):
+    lat = float(request.vars.latitude) if request.vars.latitude else None
+    lng = float(request.vars.longitude) if request.vars.longitude else None
+    title = str(request.vars.title) if request.vars.title else None
+    occur_date = str(request.vars.date) if request.vars.date else None
+    description = str(request.vars.description) if request.vars.description else None
+    if lat and lng and title and occur_date and description:
         occur_date = datetime.datetime.strptime(occur_date, "%Y-%m-%dT%H:%M:%S")
-        # parses ISO string, just call toISOString() on any javascript date object
+        # parses ISO string without timezones, as this is a pain to handle, call format on the moment
+        # object in default_index.js
         event_id = db.events.insert(latitude=lat, longitude=lng, title=title, occurs_at=occur_date,
                                     description=description, creator=auth.user.id)
         event = db(db.events.id == event_id).select().first()

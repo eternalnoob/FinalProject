@@ -22,7 +22,6 @@ var app = function() {
         )
     };
 
-
     self.initmap = function() {
         self.vue.map = new GMaps({
             el: '#map',
@@ -38,7 +37,6 @@ var app = function() {
                     title: 'Add marker',
                     name: 'add_marker',
                     action: function (e) {
-                        console.log(e)
                         if (self.vue.currTempMarker != null) {
                             this.removeMarker(self.vue.currTempMarker);
                         }
@@ -172,6 +170,7 @@ var app = function() {
             if (self.vue.usingMapMarker) {
                 if(self.vue.currTempMarker == null) {
                     //raise error about not selecting a location for the event
+                    self.vue.markerError = True;
                 } else {
                     pos = self.vue.currTempMarker.getPosition();
                     latitude = pos.lat();
@@ -216,13 +215,22 @@ var app = function() {
                                         self.add_to_map(data);
                                         console.log(data);
                                     })
+                                    .fail(function() {
+                                        //flash the inputError to the user
+                                        //in case the server ran into an error not parsed by front end
+                                        self.vue.inputError = true;
+                                        console.log('cool');
+                                    });
+
                             } else {
                                 console.log("Could not Find This Address!");
+                                self.vue.addressError = true;
                             }
                         }
                     });
                 } else {
                     console.log("No Address Entered!");
+                    self.vue.inputError = true;
                 }
             }
         }
@@ -256,7 +264,6 @@ var app = function() {
         delimiters: ['${', '}'],
         unsafeDelimiters: ['!{', '}'],
         data: {
-            inputError: false,
             islogged  : false,
             page      : 'event_view',
             events    : [],
@@ -271,6 +278,9 @@ var app = function() {
             usingMapMarker: false,
             //holds the current temporary marker if the user is
             currTempMarker: null,
+            inputError: false,
+            markerError: false,
+            addressError: false,
 
             //used to display alerts to the user about invalid inputs
 
