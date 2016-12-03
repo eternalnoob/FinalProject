@@ -9,7 +9,12 @@ def get_user_full_name(user_id):
     user = db(db.auth_user.id == user_id).select().first()
     return user.first_name + ' ' + user.last_name
 
+
 def translate_event(event):
+    """
+    :param event: event row we need to create the marker dictionary for
+    :return: a dictionary corresponding to all information needed to render the event on the front end
+    """
     event_dict = dict()
 
     event_dict['lat'] = event.latitude

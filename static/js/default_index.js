@@ -18,9 +18,10 @@ var app = function() {
 
     self.auto_refresh = function () {
         setInterval(
-            self.load_events, 30000
+            self.load_events, 60*1000
         )
     };
+
 
     self.initmap = function() {
         self.vue.map = new GMaps({
@@ -28,23 +29,38 @@ var app = function() {
             lat: 36.9914,
             lng: -122.0609
         });
-        test = self.vue.map;
-        self.vue.map.setContextMenu({
-            control: 'map',
-            options:[{
-                title: 'Add marker',
-                name: 'add_marker',
-                action: function (e) {
-                    this.addMarker({
-                        lat: e.latLng.lat(),
-                        lng: e.latLng.lng(),
-                        title: 'New marker'
-                    });
+        var options = [];
+        console.log(self.vue.islogged);
+        if (self.vue.islogged) {
+            console.log('hmmm');
+            options.push(
+                {
+                    title: 'Add marker',
+                    name: 'add_marker',
+                    action: function (e) {
+                        console.log(e)
+                        if (self.vue.currTempMarker != null) {
+                            this.removeMarker(self.vue.currTempMarker);
+                        }
+                        self.vue.currTempMarker = this.addMarker({
+                            lat: e.latLng.lat(),
+                            lng: e.latLng.lng(),
+                            title: 'Current Temporary Marker'
+                        });
+                        console.log(self.vue.currTempMarker);
+                    }
                 }
-            }
-            ]
-        })
-        test.addControl({
+            )
+        }
+        //only add context menu if we have options to add to it
+        if (options.length > 0) {
+            self.vue.map.setContextMenu({
+                control: 'map',
+                options: options
+            });
+        }
+        //add controls for geolocating user location
+        self.vue.map.addControl({
             position: 'top_center',
             content: 'Geolocate',
             style: {
@@ -61,7 +77,7 @@ var app = function() {
                                 lat: position.coords.latitude,
                                 lng: position.coords.longitude
                             };
-                            test.setCenter(pos);
+                            self.vue.map.setCenter(pos);
                         }, function() {
                             alert('Your browser is old AF!');
                         });
@@ -69,6 +85,8 @@ var app = function() {
                 }
             }
         });
+        //now load the events
+        self.first_load();
     };
 
     self.first_load = function () {
@@ -120,12 +138,14 @@ var app = function() {
 
 
     self.fire = function(id){
+        // this likes an event
         console.log("FIRE");
         console.log("WE STARTED THE FIRE AT" + id.toString());
         /*is googoo*/
         make_feedback(id, true);
     };
     self.del =  function(id) {
+        //this dislikes an event
         console.log("NOFIRE");
         console.log("WE STOPPED THE FIRE AT" + id.toString());
         /* is poopoo*/
@@ -139,24 +159,27 @@ var app = function() {
     };
 
 
-    self.add_event_marker = function(address, title, desc) {
+    self.add_event_marker = function() {
+        //user can add an event by either placing marker directly on map or by
+        //inputting address into search
         var moment = $('#datetimepicker1').data("DateTimePicker").date();
-        console.log(moment);
-        if(address == '' || title == '' || desc == '' || moment == null){
-
-        }
-        else{
-            GMaps.geocode({
-                address: address.trim(),
-                callback: function(results, status) {
-                    var latlng = results[0].geometry.location;
-                    console.log(latlng);
+        if(self.vue.title == '' || self.vue.desc == '' || moment == null){
+            //handle error about invalid
+        } else {
+            var latitude, longitude;
+            if (self.vue.usingMapMarker) {
+                if(self.vue.currTempMarker == null) {
+                    //raise error about not selecting a location for the event
+                } else {
+                    pos = self.vue.currTempMarker.getPosition();
+                    latitude = pos.lat();
+                    longitude = pos.lng();
                     $.post(addEventUrl,
                         {
-                            latitude: latlng.lat(),
-                            longitude: latlng.lng(),
-                            title: title,
-                            description: desc,
+                            latitude: latitude,
+                            longitude: longitude,
+                            title: self.vue.title,
+                            description: self.vue.desc,
                             date: moment.utc().format('YYYY-MM-DDTHH:mm:ss')
                         },
                         function(data) {
@@ -164,7 +187,36 @@ var app = function() {
                             console.log(data);
                         })
                 }
-            });
+            } else {
+                //otherwise we try and use address
+                if (self.vue.addr != '') {
+                    GMaps.geocode({
+                        address: self.vue.addr.trim(),
+                        callback: function(results, status) {
+                            if(results.length > 0) {
+                                var latlng = results[0].geometry.location;
+                                console.log(latlng);
+                                $.post(addEventUrl,
+                                    {
+                                        latitude: latlng.lat(),
+                                        longitude: latlng.lng(),
+                                        title: self.vue.title,
+                                        description: self.vue.desc,
+                                        date: moment.utc().format('YYYY-MM-DDTHH:mm:ss')
+                                    },
+                                    function(data) {
+                                        self.add_to_map(data);
+                                        console.log(data);
+                                    })
+                            } else {
+                                console.log("Could not Find This Address!");
+                            }
+                        }
+                    });
+                } else {
+                    console.log("No Address Entered!");
+                }
+            }
         }
     };
 
@@ -173,6 +225,7 @@ var app = function() {
             if (self.vue.events != data.events){
                 self.vue.map.removeMarkers();
                 self.vue.events = data.events;
+
                 self.show_events();
             }
         })
@@ -182,6 +235,9 @@ var app = function() {
         $.get(checkLoginUrl,
             function(data){
                 self.vue.islogged = data.islogged;
+                //if we had promises, I would use that instead, but don't want to inject
+                //tons of other libraries
+                self.initmap();
             }
         );
     };
@@ -201,7 +257,11 @@ var app = function() {
             long      : null,
             title     : '',
             desc      : '',
-            map       : null
+            map       : null,
+            //usingMapMarker allows users to place an event by marker in addition to address search
+            usingMapMarker: false,
+            //holds the current temporary marker if the user is
+            currTempMarker: null,
         },
         methods: {
             initmap         : self.initmap,
@@ -212,9 +272,8 @@ var app = function() {
 
     });
 
-    self.check_login();
-    self.initmap(); // googleializes the map on reload
-    self.first_load();
+    self.check_login(); //had to inject a lot of callbacks into this, would have loved promises, but don't
+                        //know the best library
     self.auto_refresh(); //set to refresh page so we see all events
 
     return self;
