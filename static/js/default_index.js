@@ -165,6 +165,8 @@ var app = function() {
         var moment = $('#datetimepicker1').data("DateTimePicker").date();
         if(self.vue.title == '' || self.vue.desc == '' || moment == null){
             //handle error about invalid
+            self.vue.inputError = true;
+            console.log('cool');
         } else {
             var latitude, longitude;
             if (self.vue.usingMapMarker) {
@@ -186,6 +188,12 @@ var app = function() {
                             self.add_to_map(data);
                             console.log(data);
                         })
+                        .fail(function() {
+                            //flash the inputError to the user
+                            //in case the server ran into an error not parsed by front end
+                            self.vue.inputError = true;
+                            console.log('cool');
+                        });
                 }
             } else {
                 //otherwise we try and use address
@@ -248,6 +256,7 @@ var app = function() {
         delimiters: ['${', '}'],
         unsafeDelimiters: ['!{', '}'],
         data: {
+            inputError: false,
             islogged  : false,
             page      : 'event_view',
             events    : [],
@@ -262,6 +271,9 @@ var app = function() {
             usingMapMarker: false,
             //holds the current temporary marker if the user is
             currTempMarker: null,
+
+            //used to display alerts to the user about invalid inputs
+
         },
         methods: {
             initmap         : self.initmap,
@@ -269,13 +281,13 @@ var app = function() {
             fire: self.fire,
             del: self.del
         }
-
     });
 
     self.check_login(); //had to inject a lot of callbacks into this, would have loved promises, but don't
                         //know the best library
     self.auto_refresh(); //set to refresh page so we see all events
 
+    $("#vue-div").show();
     return self;
 };
 

@@ -112,13 +112,17 @@ def addevent():
     title = request.vars.title
     occur_date = request.vars.date
     description = request.vars.description
-    occur_date = datetime.datetime.strptime(occur_date, "%Y-%m-%dT%H:%M:%S")
-    # parses ISO string, just call toISOString() on any javascript date object
-    event_id = db.events.insert(latitude=lat, longitude=lng, title=title, occurs_at=occur_date,
-                                description=description, creator=auth.user.id)
-    event = db(db.events.id == event_id).select().first()
-    response.status = 201
-    return response.json(translate_event(event))
+    if( lat and  lng and  title and  occur_date and description ):
+        occur_date = datetime.datetime.strptime(occur_date, "%Y-%m-%dT%H:%M:%S")
+        # parses ISO string, just call toISOString() on any javascript date object
+        event_id = db.events.insert(latitude=lat, longitude=lng, title=title, occurs_at=occur_date,
+                                    description=description, creator=auth.user.id)
+        event = db(db.events.id == event_id).select().first()
+        response.status = 201
+        return response.json(translate_event(event))
+    else:
+        response.status = 400
+        return response.json(dict());
 
 @auth.requires_login()
 def deleteevent():

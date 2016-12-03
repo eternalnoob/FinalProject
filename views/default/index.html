@@ -2,7 +2,6 @@
 
 {{block head}}
 <script defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBf-IjT8bV8XgVG_xl2B6U6DZA58l1GICI"></script>
-<script defer src="https://cdnjs.cloudflare.com/ajax/libs/q.js/2.0.3/q.min.js"></script>
 <script defer src="{{=URL('static', 'js/gmaps.js')}}"></script>
 <script defer src="{{=URL('static', 'js/vue.js')}}"></script>
 <script src="https://cdn.jsdelivr.net/emojione/2.2.6/lib/js/emojione.min.js"></script>
@@ -22,7 +21,7 @@
 {{end}}
 
 <div class="main_content">
-    <div id="vue-div" class="row display:none">
+    <div id="vue-div" style="display: none">
 
         <div id="event_view" class="col-xs-4" v-if="page=='event_view'">
             <form>
@@ -54,6 +53,13 @@
                 <button type="submit" v-on:click.prevent="add_event_marker(addr, title, desc)" class="btn
                 btn-default"
                 v-bind:disabled="!islogged">PostMarker</button>
+                <div v-if="inputError" class="alert alert-danger alert-dismissible" role="alert">
+                    <button type="button" class="close" v-on:click="inputError = false" aria-label="Close">
+                        <i class="fa fa-close fa-lg"
+                           aria-hidden="true"></i></button>
+                    <strong>Warning!</strong> There are errors with your input!
+                </div>
+
 
             </form>
 
