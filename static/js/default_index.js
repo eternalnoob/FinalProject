@@ -231,13 +231,13 @@ var app = function() {
 
     self.load_events = function() {
         $.get(getMarkerUrl, function(data) {
-            if (!cmpevents(data.events, self.vue.events)){
-
+            if (!cmpevents(data.events, self.vue.events) || self.vue.swappedPage){
                 console.log(data.events);
                 console.log(self.vue.events);
                 self.vue.map.removeMarkers();
                 self.vue.events = data.events;
                 self.show_events();
+                self.vue.swappedPage = false;
             }
         })
     };
@@ -252,7 +252,8 @@ var app = function() {
         self.vue.page = page;
         if(page == 'event_add'){
          //display form for user, dont forget to add vbind for logged in later!!
-            self.check_login();
+            self.vue.swappedPage = true;
+            self.load_events();
         };
         if(page == 'event_watch'){
           $.get(litEventsUrl,
@@ -327,7 +328,8 @@ var app = function() {
             inputError: false,
             markerError: false,
             addressError: false,
-            hotevents : []
+            hotevents : [],
+            swappedPage: false,
         },
         methods: {
             initmap         : self.initmap,
