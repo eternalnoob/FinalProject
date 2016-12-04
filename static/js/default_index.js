@@ -173,6 +173,7 @@ var app = function() {
                             latitude: latitude,
                             longitude: longitude,
                             title: self.vue.title,
+                            fblink: self.vue.fblink,
                             description: self.vue.desc,
                             date: moment.utc().format('YYYY-MM-DDTHH:mm:ss')
                         },
@@ -201,6 +202,7 @@ var app = function() {
                                         latitude: latlng.lat(),
                                         longitude: latlng.lng(),
                                         title: self.vue.title,
+                                        fblink: self.vue.fblink,
                                         description: self.vue.desc,
                                         date: moment.utc().format('YYYY-MM-DDTHH:mm:ss')
                                     },
@@ -245,6 +247,10 @@ var app = function() {
     //stanley added this
     self.add_event_form = function () {
           self.goto('event_add');
+    };
+
+    self.watch_event_button = function () {
+            self.goto('event_watch');
     };
 
     //Stanley added this
@@ -318,6 +324,7 @@ var app = function() {
             latt      : null,
             long      : null,
             title     : '',
+            fblink    : '',
             desc      : '',
             map       : null,
             //usingMapMarker allows users to place an event by marker in addition to address search
@@ -337,6 +344,7 @@ var app = function() {
             add_event_form: self.add_event_form,
             goto: self.goto,
             fire: self.fire,
+            watch_event_button: self.watch_event_button,
             del: self.del
         }
     });

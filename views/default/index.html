@@ -75,6 +75,11 @@
                     </div>
 
                     <div class="form-group">
+                        <label for="fblink">Enter Facebook event link</label>
+                        <input id="fblink" v-model="fblink" type="url" class="form-control" placeholder="event FB URL">
+                    </div>
+
+                    <div class="form-group">
                         <label for="description">Enter an event description</label>
                         <textarea v-model="desc" rows="6" id="description" type="text" class="form-control"
                                   placeholder="event description"></textarea>
@@ -102,9 +107,12 @@
                         </div>
                     </div>
 
-                    <button type="submit" v-on:click.prevent="add_event_marker(addr, title, desc)" class="btn
+                    <button type="submit" v-on:click.prevent="add_event_marker(addr, title, fblink, desc)" class="btn
                 btn-primary"
                             v-bind:disabled="!islogged">Submit Event</button>
+                    <button class="watch_event" v-on:click="watch_event_button()" >
+                            <i class="fa fa-eye" aria-hidden="true">Watch Events</i>
+                    </button>
                     <div v-if="inputError" class="alert alert-danger alert-dismissible" role="alert">
                         <button type="button" class="close" v-on:click="inputError = false" aria-label="Close">
                             <i class="fa fa-close fa-lg"

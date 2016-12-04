@@ -21,6 +21,7 @@ db.define_table('events',
                 Field('edited_on', 'datetime', update=datetime.datetime.utcnow()),
                 Field('occurs_at', 'datetime', required=True),
                 Field('title', 'string', default="", required=True),
+                Field('fblink', 'string'),
                 Field('description', 'string', default=""))
 
 # this is the idea that a user can confirm that an event is correct

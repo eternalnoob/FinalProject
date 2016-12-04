@@ -16,7 +16,7 @@ def translate_event(event):
     :return: a dictionary corresponding to all information needed to render the event on the front end
     """
     event_dict = dict()
-
+    print(event.get('fblink'))
     event_dict['lat'] = event.latitude
     event_dict['lng'] = event.longitude
     if auth.user and event.creator == auth.user.id:
@@ -52,6 +52,7 @@ def translate_event(event):
 
     event_dict['total_attendees'] = len(positive)
     event_dict['total_haters'] = len(negative)
+    event_dict['fblink'] = event.fblink
 
     content_template= """
 <div class="center">
@@ -60,6 +61,8 @@ def translate_event(event):
     </h5>
     <p style="white-space: pre-space;">
         {{=event['description']}}
+    </p>
+    <p> {{=event['fblink']}}
     </p>
     <span class="row">
         Liked by: {{=event['total_attendees']}} users
@@ -120,13 +123,15 @@ def addevent():
     lat = float(request.vars.latitude) if request.vars.latitude else None
     lng = float(request.vars.longitude) if request.vars.longitude else None
     title = str(request.vars.title) if request.vars.title else None
+    fblink = str(request.vars.fblink) if request.vars.fblink else None
     occur_date = str(request.vars.date) if request.vars.date else None
+    print(fblink)
     description = str(request.vars.description) if request.vars.description else None
-    if lat and lng and title and occur_date and description:
+    if lat and lng and title and fblink and occur_date and description:
         occur_date = datetime.datetime.strptime(occur_date, "%Y-%m-%dT%H:%M:%S")
         # parses ISO string without timezones, as this is a pain to handle, call format on the moment
         # object in default_index.js
-        event_id = db.events.insert(latitude=lat, longitude=lng, title=title, occurs_at=occur_date,
+        event_id = db.events.insert(latitude=lat, longitude=lng, title=title, fblink=fblink, occurs_at=occur_date,
                                     description=description, creator=auth.user.id)
         event = db(db.events.id == event_id).select().first()
         response.status = 201
