@@ -29,16 +29,27 @@
             </button>
 
             <div class="panel panel-primary">
-                <div class="panel-heading">Lit Events</div>
+                <div class="panel-heading">Lit Events Near You</div>
                 <div class="panel-body">
                     <ol type="1">
-                        <li v-for="event in hotevents">${event.title}</li>
+                        <li v-for="event in hotevents">
+                            <div>
+                                <p>Title: ${event.title}</p>
+                                <p>Description: ${event.description}</p>
+                                <p>Link: ${event.fblink}</p>
+                                <p>Likes: ${event.total_attendees}</p>
+                                <p>Dislikes: ${event.total_haters}</p>
+                            </div>
+                        </li>
                     </ol>
                 </div>
             </div>
         </div>
 
         <div id="event_add" class="col-xs-4" v-if="page=='event_add'">
+            <button class="watch_event" v-on:click="watch_event_button()" >
+                <i class="fa fa-eye" aria-hidden="true">Watch Events</i>
+            </button>
             <div class="panel panel-primary">
                 <div class="panel-heading">Create An Event</div>
                 <form class="panel-body">
@@ -110,9 +121,6 @@
                     <button type="submit" v-on:click.prevent="add_event_marker(addr, title, fblink, desc)" class="btn
                 btn-primary"
                             v-bind:disabled="!islogged">Submit Event</button>
-                    <button class="watch_event" v-on:click="watch_event_button()" >
-                            <i class="fa fa-eye" aria-hidden="true">Watch Events</i>
-                    </button>
                     <div v-if="inputError" class="alert alert-danger alert-dismissible" role="alert">
                         <button type="button" class="close" v-on:click="inputError = false" aria-label="Close">
                             <i class="fa fa-close fa-lg"

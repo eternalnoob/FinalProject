@@ -2,8 +2,29 @@
 import datetime
 from datetime import timedelta
 from template import render
-import StringIO
+from math import sin, radians, cos, asin, sqrt
 import os
+
+
+# I found this on stackoverflow
+# http://stackoverflow.com/questions/15736995/how-can-i-quickly-estimate-the-distance-between-two-latitude-longitude-points
+def haversine(lon1, lat1, lon2, lat2):
+    """
+    Calculate the great circle distance between two points
+    on the earth (specified in decimal degrees)
+    """
+    # convert decimal degrees to radians
+    print(lon2)
+    print(lat2)
+    lon1, lat1, lon2, lat2 = map(radians, [float(lon1), float(lat1), float(lon2), float(lat2)])
+    # haversine formula
+    dlon = lon2 - lon1
+    dlat = lat2 - lat1
+    a = sin(dlat/2)**2 + cos(lat1) * cos(lat2) * sin(dlon/2)**2
+    c = 2 * asin(sqrt(a))
+    miles = 3959 * c
+    return miles
+
 
 def get_user_full_name(user_id):
     user = db(db.auth_user.id == user_id).select().first()
@@ -62,8 +83,13 @@ def translate_event(event):
     <p style="white-space: pre-space;">
         {{=event['description']}}
     </p>
+    {{if event['fblink']:}}
     <p> {{=event['fblink']}}
     </p>
+    {{else:}}
+    <p>No Link Provided!</p>
+    {{pass}}
+
     <span class="row">
         Liked by: {{=event['total_attendees']}} users
     </span>
@@ -101,17 +127,28 @@ def translate_event(event):
 
 #Stanley added this
 def litevents():
-    events = db(db.events.occurs_at > (datetime.datetime.utcnow() - timedelta(hours=2))
-                                       ).select(orderby=~db.events.occurs_at)
+    maplat = float(request.vars.lat)
+    maplng = float(request.vars.lng)
+    maxdist = float(request.vars.maxdst)
+    events = [x for x in db((db.events.occurs_at > (datetime.datetime.utcnow() - timedelta(hours=3))) &
+                            (db.events.occurs_at < (datetime.datetime.utcnow() + timedelta(hours=23)))).select(
+        orderby=~db.events.occurs_at) if haversine(maplng, maplat, x.longitude, x.latitude) <= maxdist]
+
     return_dict = {'events': []}
     for event in events:
         return_dict['events'].append(translate_event(event))
-    return_dict['events'].sort(key = lambda event: event['total_attendees'])
+    return_dict['events'].sort(key = lambda event: event['total_attendees'] - event['total_haters'], reverse=True)
     return response.json(return_dict)
 
 def getmarkers():
-    events = db(db.events.occurs_at > (datetime.datetime.utcnow() - timedelta(hours=2))
-                                       ).select(orderby=~db.events.occurs_at)
+    maplat = float(request.vars.lat)
+    maplng = float(request.vars.lng)
+    print(maplat)
+    print(maplng)
+    maxdist = float(request.vars.maxdst)
+    events = [x for x in db((db.events.occurs_at > (datetime.datetime.utcnow() - timedelta(hours=3))) &
+                            (db.events.occurs_at < (datetime.datetime.utcnow() + timedelta(hours=23)))).select(
+        orderby=~db.events.occurs_at) if haversine(maplng, maplat, x.longitude, x.latitude) <= maxdist]
     return_dict = {'events': []}
     for event in events:
         return_dict['events'].append(translate_event(event))

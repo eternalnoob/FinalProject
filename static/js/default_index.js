@@ -18,7 +18,7 @@ var app = function() {
 
     self.auto_refresh = function () {
         setInterval(
-            self.load_events, 60*1000
+            self.load_events, 10*1000
         )
     };
 
@@ -31,7 +31,6 @@ var app = function() {
         var options = [];
         console.log(self.vue.islogged);
         if (self.vue.islogged) {
-            console.log('hmmm');
             options.push(
                 {
                     title: 'Add marker',
@@ -45,7 +44,6 @@ var app = function() {
                             lng: e.latLng.lng(),
                             title: 'Current Temporary Marker'
                         });
-                        console.log(self.vue.currTempMarker);
                     }
                 }
             )
@@ -77,7 +75,7 @@ var app = function() {
                             };
                             self.vue.map.setCenter(pos);
                         }, function() {
-                            alert('Your browser is old AF!');
+                            alert('Your browser is old!');
                         });
                     }
                 }
@@ -155,14 +153,11 @@ var app = function() {
         //inputting address into search
         var moment = $('#datetimepicker1').data("DateTimePicker").date();
         if(self.vue.title == '' || self.vue.desc == '' || moment == null){
-            //handle error about invalid
             self.vue.inputError = true;
-            console.log('cool');
         } else {
             var latitude, longitude;
             if (self.vue.usingMapMarker) {
                 if(self.vue.currTempMarker == null) {
-                    //raise error about not selecting a location for the event
                     self.vue.markerError = True;
                 } else {
                     pos = self.vue.currTempMarker.getPosition();
@@ -231,17 +226,40 @@ var app = function() {
         }
     };
 
+    //used to add the parameters needed to only find nearby events
+    self.make_get_url = function(baseurl) {
+        var lat, lng;
+        if (self.vue.map !== null) {
+            lat= self.vue.map.getCenter().lat();
+            lng= self.vue.map.getCenter().lng();
+        }
+        else{
+            lat = 36.9914;
+            lng = -122.0609;
+        }
+        var pp = {
+            lat: lat,
+            lng: lng,
+            maxdst: self.vue.maxDist
+        };
+        return baseurl+"?&"+$.param(pp);
+    };
+
+
+
     self.load_events = function() {
-        $.get(getMarkerUrl, function(data) {
-            if (!cmpevents(data.events, self.vue.events) || self.vue.swappedPage){
+        $.get(self.make_get_url(getMarkerUrl), function(data) {
                 console.log(data.events);
                 console.log(self.vue.events);
                 self.vue.map.removeMarkers();
                 self.vue.events = data.events;
                 self.show_events();
                 self.vue.swappedPage = false;
-            }
-        })
+        });
+        $.get(self.make_get_url(litEventsUrl),
+            function (data) {
+                self.vue.hotevents = data.events;
+        });
     };
 
     //stanley added this
@@ -262,11 +280,7 @@ var app = function() {
             self.load_events();
         };
         if(page == 'event_watch'){
-          $.get(litEventsUrl,
-                function (data) {
-                    console.log(data);
-                    self.vue.hotevents = data.events;
-                })
+            self.load_events();
         };
     };
 
@@ -337,6 +351,8 @@ var app = function() {
             addressError: false,
             hotevents : [],
             swappedPage: false,
+            //show events within 50 miles by default
+            maxDist: 50
         },
         methods: {
             initmap         : self.initmap,
