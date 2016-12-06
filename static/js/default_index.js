@@ -18,7 +18,7 @@ var app = function() {
 
     self.auto_refresh = function () {
         setInterval(
-            self.load_events, 10*1000
+            self.load_events, 45*1000
         )
     };
 
@@ -199,6 +199,7 @@ var app = function() {
                                         title: self.vue.title,
                                         fblink: self.vue.fblink,
                                         description: self.vue.desc,
+                                        // pass the date in the format expected by the server
                                         date: moment.utc().format('YYYY-MM-DDTHH:mm:ss')
                                     },
                                     function(data) {
@@ -249,16 +250,20 @@ var app = function() {
 
     self.load_events = function() {
         $.get(self.make_get_url(getMarkerUrl), function(data) {
+            if(!cmpevents(self.vue.events, data.events)){
                 console.log(data.events);
                 console.log(self.vue.events);
                 self.vue.map.removeMarkers();
                 self.vue.events = data.events;
                 self.show_events();
                 self.vue.swappedPage = false;
+            }
         });
         $.get(self.make_get_url(litEventsUrl),
             function (data) {
-                self.vue.hotevents = data.events;
+                if(!cmpevents(self.vue.hotevents, data.events)){
+                    self.vue.hotevents = data.events;
+                }
         });
     };
 
@@ -305,7 +310,7 @@ var app = function() {
             else{
                 for(var j = 0; j < obj1.length; j++){
                     for(var  i = 0; i < fields.length; i++) {
-                        if( obj1[fields[i]] !== obj2[fields[i]]){
+                        if( obj1[j][fields[i]] != obj2[j][fields[i]]){
                             return false;
                         }
                     };
@@ -318,6 +323,7 @@ var app = function() {
 
     function cmpevents(events1, events2) {
         //used to make sure we don't constantly repopulate the events when it is not necessary
+        //if we don't do this, it'll constantly close the infoboxes and disappear event markers
         var fields = ['creator', 'lat', 'lng', 'occurs_at', 'description',
             'edited_on', 'infobox_content', 'attending', 'total_haters',
             'total_attendees', 'marker_url']

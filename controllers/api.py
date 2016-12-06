@@ -49,8 +49,6 @@ def translate_event(event):
     event_dict['title'] = event.title
     event_dict['description'] = event.description
     event_dict['edited_on'] = event.edited_on
-    logged_in_infobox ='<div class="btn btn-group">{}</div>'
-    #lol how is there not a better way to do this in vue
 
     event_dict['id'] = event.id
     if auth.user:
@@ -160,7 +158,7 @@ def addevent():
     lat = float(request.vars.latitude) if request.vars.latitude else None
     lng = float(request.vars.longitude) if request.vars.longitude else None
     title = str(request.vars.title) if request.vars.title else None
-    fblink = str(request.vars.fblink) if request.vars.fblink else None
+    fblink = str(request.vars.fblink) if request.vars.fblink else 'No Link!'
     occur_date = str(request.vars.date) if request.vars.date else None
     print(fblink)
     description = str(request.vars.description) if request.vars.description else None
